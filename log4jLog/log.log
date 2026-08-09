@@ -1,0 +1,467 @@
+2026-08-09 22:14:35.402 [http-nio-8091-exec-4] INFO  c.workflow.dag_engine.impl.UserImpl - deleteUser called for user: john_doe
+2026-08-09 22:14:35.403 [http-nio-8091-exec-4] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:14:35.404 [http-nio-8091-exec-4] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@3f32a5a0
+2026-08-09 22:17:20.095 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 9.1.0.Final
+2026-08-09 22:17:20.168 [main] INFO  c.w.dag_engine.DagEngineApplication - Starting DagEngineApplication using Java 25.0.3 with PID 30920 (E:\dag-engine\target\classes started by sheet in E:\dag-engine)
+2026-08-09 22:17:20.170 [main] INFO  c.w.dag_engine.DagEngineApplication - No active profile set, falling back to 1 default profile: "default"
+2026-08-09 22:17:21.445 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-08-09 22:17:21.555 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 94 ms. Found 1 JPA repository interface.
+2026-08-09 22:17:22.305 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8091 (http)
+2026-08-09 22:17:22.328 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8091"]
+2026-08-09 22:17:22.332 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-08-09 22:17:22.332 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-08-09 22:17:22.437 [main] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 2168 ms
+2026-08-09 22:17:22.765 [main] INFO  org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-08-09 22:17:22.867 [main] INFO  org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-08-09 22:17:23.576 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-08-09 22:17:23.629 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-08-09 22:17:23.929 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@5fa5c8cf
+2026-08-09 22:17:23.933 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-08-09 22:17:23.982 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-08-09 22:17:24.022 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/dag_nexus_db]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.14
+	Default catalog/schema: dag_nexus_db/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-08-09 22:17:25.257 [main] INFO  org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-08-09 22:17:25.367 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-08-09 22:17:25.512 [main] INFO  o.s.d.j.r.q.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-08-09 22:17:26.493 [main] WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-08-09 22:17:27.014 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8091"]
+2026-08-09 22:17:27.025 [main] WARN  o.s.b.w.s.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2026-08-09 22:17:27.027 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-08-09 22:17:27.032 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-08-09 22:17:27.039 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-08-09 22:17:27.075 [main] INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-08-09 22:17:27.105 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8091 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8091 or configure this application to listen on another port.
+
+2026-08-09 22:17:39.773 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 9.1.0.Final
+2026-08-09 22:17:39.852 [main] INFO  c.w.dag_engine.DagEngineApplication - Starting DagEngineApplication using Java 25.0.3 with PID 24200 (E:\dag-engine\target\classes started by sheet in E:\dag-engine)
+2026-08-09 22:17:39.854 [main] INFO  c.w.dag_engine.DagEngineApplication - No active profile set, falling back to 1 default profile: "default"
+2026-08-09 22:17:41.044 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-08-09 22:17:41.162 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 98 ms. Found 1 JPA repository interface.
+2026-08-09 22:17:41.938 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8091 (http)
+2026-08-09 22:17:41.959 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8091"]
+2026-08-09 22:17:41.964 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-08-09 22:17:41.965 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-08-09 22:17:42.069 [main] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 2124 ms
+2026-08-09 22:17:42.350 [main] INFO  org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-08-09 22:17:42.446 [main] INFO  org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-08-09 22:17:43.139 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-08-09 22:17:43.188 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-08-09 22:17:43.475 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@4b360972
+2026-08-09 22:17:43.478 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-08-09 22:17:43.577 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-08-09 22:17:43.627 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/dag_nexus_db]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.14
+	Default catalog/schema: dag_nexus_db/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-08-09 22:17:44.841 [main] INFO  org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-08-09 22:17:44.956 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-08-09 22:17:45.071 [main] INFO  o.s.d.j.r.q.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-08-09 22:17:45.997 [main] WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-08-09 22:17:46.469 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8091"]
+2026-08-09 22:17:46.498 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8091 (http) with context path '/'
+2026-08-09 22:17:46.509 [main] INFO  c.w.dag_engine.DagEngineApplication - Started DagEngineApplication in 7.488 seconds (process running for 8.23)
+2026-08-09 22:17:56.583 [http-nio-8091-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-08-09 22:17:56.584 [http-nio-8091-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-08-09 22:17:56.587 [http-nio-8091-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2026-08-09 22:18:49.400 [http-nio-8091-exec-1] INFO  c.workflow.dag_engine.impl.UserImpl - deleteUser called for user: john_doe
+2026-08-09 22:18:58.102 [http-nio-8091-exec-1] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:18:58.110 [http-nio-8091-exec-1] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@4f343735
+2026-08-09 22:20:10.033 [http-nio-8091-exec-3] INFO  c.workflow.dag_engine.impl.UserImpl - deleteUser called for user: john_doe
+2026-08-09 22:20:13.368 [http-nio-8091-exec-3] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:20:13.374 [http-nio-8091-exec-3] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@4df21505
+2026-08-09 22:23:51.931 [http-nio-8091-exec-4] INFO  c.w.d.controller.UserController - REST request to create user: john_doe
+2026-08-09 22:23:51.932 [http-nio-8091-exec-4] INFO  c.workflow.dag_engine.impl.UserImpl - createUser called for user: john_doe
+2026-08-09 22:23:51.932 [http-nio-8091-exec-4] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:23:51.932 [http-nio-8091-exec-4] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@6a8349c7
+2026-08-09 22:23:51.933 [http-nio-8091-exec-4] INFO  c.w.dag_engine.services.UserServices - Creating user: john_doe
+2026-08-09 22:25:31.358 [http-nio-8091-exec-6] INFO  c.w.d.controller.UserController - REST request to create user: john_doe
+2026-08-09 22:25:35.876 [http-nio-8091-exec-6] INFO  c.workflow.dag_engine.impl.UserImpl - createUser called for user: john_doe
+2026-08-09 22:26:09.677 [http-nio-8091-exec-6] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:26:09.677 [http-nio-8091-exec-6] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@65e19116
+2026-08-09 22:26:11.401 [http-nio-8091-exec-6] INFO  c.w.dag_engine.services.UserServices - Creating user: john_doe
+2026-08-09 22:26:46.966 [http-nio-8091-exec-7] INFO  c.w.d.controller.UserController - REST request to create user: john_doe
+2026-08-09 22:26:50.142 [http-nio-8091-exec-7] INFO  c.workflow.dag_engine.impl.UserImpl - createUser called for user: john_doe
+2026-08-09 22:27:25.256 [http-nio-8091-exec-7] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:27:25.257 [http-nio-8091-exec-7] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@4933dfaa
+2026-08-09 22:27:27.043 [http-nio-8091-exec-7] INFO  c.w.dag_engine.services.UserServices - Creating user: john_doe
+2026-08-09 22:27:37.678 [http-nio-8091-exec-8] INFO  c.w.d.controller.UserController - REST request to create user: john_doe
+2026-08-09 22:27:41.993 [http-nio-8091-exec-8] INFO  c.workflow.dag_engine.impl.UserImpl - createUser called for user: john_doe
+2026-08-09 22:28:11.212 [http-nio-8091-exec-8] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:28:11.213 [http-nio-8091-exec-8] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@18979aed
+2026-08-09 22:28:11.533 [http-nio-8091-exec-8] INFO  c.w.dag_engine.services.UserServices - Creating user: john_doe
+2026-08-09 22:31:19.520 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 9.1.0.Final
+2026-08-09 22:31:19.599 [main] INFO  c.w.dag_engine.DagEngineApplication - Starting DagEngineApplication using Java 25.0.3 with PID 35760 (E:\dag-engine\target\classes started by sheet in E:\dag-engine)
+2026-08-09 22:31:19.601 [main] INFO  c.w.dag_engine.DagEngineApplication - No active profile set, falling back to 1 default profile: "default"
+2026-08-09 22:31:20.816 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-08-09 22:31:20.920 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 90 ms. Found 1 JPA repository interface.
+2026-08-09 22:31:21.768 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8091 (http)
+2026-08-09 22:31:21.794 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8091"]
+2026-08-09 22:31:21.798 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-08-09 22:31:21.799 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-08-09 22:31:21.925 [main] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 2227 ms
+2026-08-09 22:31:22.267 [main] INFO  org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-08-09 22:31:22.348 [main] INFO  org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-08-09 22:31:23.124 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-08-09 22:31:23.187 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-08-09 22:31:23.551 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@4fea5ee0
+2026-08-09 22:31:23.554 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-08-09 22:31:23.606 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-08-09 22:31:23.654 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/dag_nexus_db]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.14
+	Default catalog/schema: dag_nexus_db/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-08-09 22:31:25.047 [main] INFO  org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-08-09 22:31:25.165 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-08-09 22:31:25.300 [main] INFO  o.s.d.j.r.q.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-08-09 22:31:26.401 [main] WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-08-09 22:31:26.964 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8091"]
+2026-08-09 22:31:26.976 [main] WARN  o.s.b.w.s.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2026-08-09 22:31:26.979 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-08-09 22:31:26.984 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-08-09 22:31:26.994 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-08-09 22:31:27.052 [main] INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-08-09 22:31:27.081 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8091 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8091 or configure this application to listen on another port.
+
+2026-08-09 22:32:19.375 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 9.1.0.Final
+2026-08-09 22:32:19.447 [main] INFO  c.w.dag_engine.DagEngineApplication - Starting DagEngineApplication using Java 25.0.3 with PID 26076 (E:\dag-engine\target\classes started by sheet in E:\dag-engine)
+2026-08-09 22:32:19.449 [main] INFO  c.w.dag_engine.DagEngineApplication - No active profile set, falling back to 1 default profile: "default"
+2026-08-09 22:32:20.486 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-08-09 22:32:20.580 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 80 ms. Found 1 JPA repository interface.
+2026-08-09 22:32:21.209 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8091 (http)
+2026-08-09 22:32:21.228 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8091"]
+2026-08-09 22:32:21.231 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-08-09 22:32:21.232 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-08-09 22:32:21.323 [main] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1793 ms
+2026-08-09 22:32:21.593 [main] INFO  org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-08-09 22:32:21.666 [main] INFO  org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-08-09 22:32:22.344 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-08-09 22:32:22.393 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-08-09 22:32:22.701 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@2e93108a
+2026-08-09 22:32:22.703 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-08-09 22:32:22.749 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-08-09 22:32:22.783 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/dag_nexus_db]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.14
+	Default catalog/schema: dag_nexus_db/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-08-09 22:32:23.967 [main] INFO  org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-08-09 22:32:24.068 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-08-09 22:32:24.181 [main] INFO  o.s.d.j.r.q.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-08-09 22:32:25.056 [main] WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-08-09 22:32:25.487 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8091"]
+2026-08-09 22:32:25.500 [main] WARN  o.s.b.w.s.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2026-08-09 22:32:25.503 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-08-09 22:32:25.507 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-08-09 22:32:25.514 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-08-09 22:32:25.541 [main] INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2026-08-09 22:32:25.561 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Web server failed to start. Port 8091 was already in use.
+
+Action:
+
+Identify and stop the process that's listening on port 8091 or configure this application to listen on another port.
+
+2026-08-09 22:33:57.641 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 9.1.0.Final
+2026-08-09 22:33:57.713 [main] INFO  c.w.dag_engine.DagEngineApplication - Starting DagEngineApplication using Java 25.0.3 with PID 34552 (E:\dag-engine\target\classes started by sheet in E:\dag-engine)
+2026-08-09 22:33:57.715 [main] INFO  c.w.dag_engine.DagEngineApplication - No active profile set, falling back to 1 default profile: "default"
+2026-08-09 22:33:58.747 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-08-09 22:33:58.872 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 110 ms. Found 1 JPA repository interface.
+2026-08-09 22:33:59.531 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8091 (http)
+2026-08-09 22:33:59.550 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8091"]
+2026-08-09 22:33:59.555 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-08-09 22:33:59.555 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-08-09 22:33:59.649 [main] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1852 ms
+2026-08-09 22:33:59.932 [main] INFO  org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-08-09 22:34:00.008 [main] INFO  org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-08-09 22:34:00.642 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-08-09 22:34:00.692 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-08-09 22:34:00.954 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@4fea5ee0
+2026-08-09 22:34:00.958 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-08-09 22:34:01.003 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-08-09 22:34:01.040 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/dag_nexus_db]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.14
+	Default catalog/schema: dag_nexus_db/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-08-09 22:34:02.234 [main] INFO  org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-08-09 22:34:02.339 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-08-09 22:34:02.448 [main] INFO  o.s.d.j.r.q.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-08-09 22:34:03.301 [main] WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-08-09 22:34:03.735 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8091"]
+2026-08-09 22:34:03.765 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8091 (http) with context path '/'
+2026-08-09 22:34:03.776 [main] INFO  c.w.dag_engine.DagEngineApplication - Started DagEngineApplication in 6.875 seconds (process running for 7.494)
+2026-08-09 22:34:12.702 [http-nio-8091-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-08-09 22:34:12.702 [http-nio-8091-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-08-09 22:34:12.704 [http-nio-8091-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2026-08-09 22:34:12.870 [http-nio-8091-exec-1] INFO  c.workflow.dag_engine.impl.UserImpl - deleteUser called for user: john_doe
+2026-08-09 22:34:12.873 [http-nio-8091-exec-1] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:34:12.873 [http-nio-8091-exec-1] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@33a8eece
+2026-08-09 22:34:16.840 [http-nio-8091-exec-2] INFO  c.workflow.dag_engine.impl.UserImpl - deleteUser called for user: john_doe
+2026-08-09 22:34:16.840 [http-nio-8091-exec-2] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:34:16.841 [http-nio-8091-exec-2] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@373f6da7
+2026-08-09 22:34:19.193 [http-nio-8091-exec-3] INFO  c.workflow.dag_engine.impl.UserImpl - deleteUser called for user: john_doe
+2026-08-09 22:34:19.194 [http-nio-8091-exec-3] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:34:19.194 [http-nio-8091-exec-3] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@7cbad798
+2026-08-09 22:39:26.997 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 9.1.0.Final
+2026-08-09 22:39:27.072 [main] INFO  c.w.dag_engine.DagEngineApplication - Starting DagEngineApplication using Java 25.0.3 with PID 26692 (E:\dag-engine\target\classes started by sheet in E:\dag-engine)
+2026-08-09 22:39:27.074 [main] INFO  c.w.dag_engine.DagEngineApplication - No active profile set, falling back to 1 default profile: "default"
+2026-08-09 22:39:28.194 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-08-09 22:39:28.290 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 83 ms. Found 1 JPA repository interface.
+2026-08-09 22:39:28.934 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8091 (http)
+2026-08-09 22:39:28.970 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8091"]
+2026-08-09 22:39:28.974 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-08-09 22:39:28.975 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-08-09 22:39:29.067 [main] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1911 ms
+2026-08-09 22:39:29.333 [main] INFO  org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-08-09 22:39:29.408 [main] INFO  org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-08-09 22:39:30.040 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-08-09 22:39:30.088 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-08-09 22:39:30.357 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@32f308c6
+2026-08-09 22:39:30.359 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-08-09 22:39:30.410 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-08-09 22:39:30.446 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/dag_nexus_db]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.14
+	Default catalog/schema: dag_nexus_db/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-08-09 22:39:31.621 [main] INFO  org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-08-09 22:39:31.724 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-08-09 22:39:31.864 [main] INFO  o.s.d.j.r.q.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-08-09 22:39:32.788 [main] WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-08-09 22:39:33.229 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8091"]
+2026-08-09 22:39:33.256 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8091 (http) with context path '/'
+2026-08-09 22:39:33.268 [main] INFO  c.w.dag_engine.DagEngineApplication - Started DagEngineApplication in 6.974 seconds (process running for 7.609)
+2026-08-09 22:40:37.384 [http-nio-8091-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-08-09 22:40:37.385 [http-nio-8091-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-08-09 22:40:37.387 [http-nio-8091-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2026-08-09 22:40:37.567 [http-nio-8091-exec-1] INFO  c.workflow.dag_engine.impl.UserImpl - deleteUser called for user: john_doe
+2026-08-09 22:40:37.568 [http-nio-8091-exec-1] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:40:37.569 [http-nio-8091-exec-1] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@28af194
+2026-08-09 22:40:45.859 [http-nio-8091-exec-3] INFO  c.w.d.controller.UserController - REST request to create user: john_doe
+2026-08-09 22:40:45.859 [http-nio-8091-exec-3] INFO  c.workflow.dag_engine.impl.UserImpl - createUser called for user: john_doe
+2026-08-09 22:40:45.859 [http-nio-8091-exec-3] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:40:45.860 [http-nio-8091-exec-3] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@63e4f629
+2026-08-09 22:40:45.860 [http-nio-8091-exec-3] INFO  c.w.dag_engine.services.UserServices - Creating user: john_doe
+2026-08-09 22:40:52.083 [http-nio-8091-exec-2] INFO  c.w.d.controller.UserController - REST request to create user: john_doe
+2026-08-09 22:40:52.084 [http-nio-8091-exec-2] INFO  c.workflow.dag_engine.impl.UserImpl - createUser called for user: john_doe
+2026-08-09 22:40:52.084 [http-nio-8091-exec-2] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:40:52.084 [http-nio-8091-exec-2] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@539ce518
+2026-08-09 22:40:52.084 [http-nio-8091-exec-2] INFO  c.w.dag_engine.services.UserServices - Creating user: john_doe
+2026-08-09 22:40:59.739 [http-nio-8091-exec-4] INFO  c.workflow.dag_engine.impl.UserImpl - deleteUser called for user: john_doe
+2026-08-09 22:40:59.739 [http-nio-8091-exec-4] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:40:59.740 [http-nio-8091-exec-4] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@11e0918d
+2026-08-09 22:41:01.505 [http-nio-8091-exec-5] INFO  c.workflow.dag_engine.impl.UserImpl - deleteUser called for user: john_doe
+2026-08-09 22:41:01.505 [http-nio-8091-exec-5] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:41:01.505 [http-nio-8091-exec-5] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@32116139
+2026-08-09 22:44:21.693 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 9.1.0.Final
+2026-08-09 22:44:21.763 [main] INFO  c.w.dag_engine.DagEngineApplication - Starting DagEngineApplication using Java 25.0.3 with PID 3184 (E:\dag-engine\target\classes started by sheet in E:\dag-engine)
+2026-08-09 22:44:21.765 [main] INFO  c.w.dag_engine.DagEngineApplication - No active profile set, falling back to 1 default profile: "default"
+2026-08-09 22:44:22.811 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-08-09 22:44:22.910 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 85 ms. Found 1 JPA repository interface.
+2026-08-09 22:44:23.624 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8091 (http)
+2026-08-09 22:44:23.643 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8091"]
+2026-08-09 22:44:23.647 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-08-09 22:44:23.648 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-08-09 22:44:23.776 [main] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1929 ms
+2026-08-09 22:44:24.133 [main] INFO  org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-08-09 22:44:24.239 [main] INFO  org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-08-09 22:44:25.076 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-08-09 22:44:25.141 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-08-09 22:44:25.490 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@32f308c6
+2026-08-09 22:44:25.493 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-08-09 22:44:25.550 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-08-09 22:44:25.595 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/dag_nexus_db]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.14
+	Default catalog/schema: dag_nexus_db/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-08-09 22:44:27.008 [main] INFO  org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-08-09 22:44:27.120 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-08-09 22:44:27.274 [main] INFO  o.s.d.j.r.q.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-08-09 22:44:28.335 [main] WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-08-09 22:44:28.913 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8091"]
+2026-08-09 22:44:28.947 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8091 (http) with context path '/'
+2026-08-09 22:44:28.960 [main] INFO  c.w.dag_engine.DagEngineApplication - Started DagEngineApplication in 7.985 seconds (process running for 8.688)
+2026-08-09 22:44:46.439 [http-nio-8091-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-08-09 22:44:46.439 [http-nio-8091-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-08-09 22:44:46.441 [http-nio-8091-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2026-08-09 22:44:46.627 [http-nio-8091-exec-1] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:44:46.628 [http-nio-8091-exec-1] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@64e6cbe6
+2026-08-09 22:44:54.241 [http-nio-8091-exec-2] INFO  c.w.d.controller.UserController - REST request to create user: john_doe
+2026-08-09 22:44:54.242 [http-nio-8091-exec-2] INFO  c.workflow.dag_engine.impl.UserImpl - createUser called for user: john_doe
+2026-08-09 22:44:54.242 [http-nio-8091-exec-2] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:44:54.242 [http-nio-8091-exec-2] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@63e4f629
+2026-08-09 22:44:54.243 [http-nio-8091-exec-2] INFO  c.w.dag_engine.services.UserServices - Creating user: john_doe
+2026-08-09 22:45:00.745 [http-nio-8091-exec-5] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:45:00.745 [http-nio-8091-exec-5] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@49666943
+2026-08-09 22:45:07.770 [http-nio-8091-exec-4] INFO  c.workflow.dag_engine.impl.UserImpl - deleteUser called for user: john_doe
+2026-08-09 22:45:07.771 [http-nio-8091-exec-4] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:45:07.771 [http-nio-8091-exec-4] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@32116139
+2026-08-09 22:45:18.338 [http-nio-8091-exec-3] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:45:18.338 [http-nio-8091-exec-3] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@11e0918d
+2026-08-09 22:45:21.350 [http-nio-8091-exec-6] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:45:21.353 [http-nio-8091-exec-6] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@61abc7f1
+2026-08-09 22:45:25.876 [http-nio-8091-exec-7] INFO  c.w.d.controller.UserController - REST request to create user: john_doe
+2026-08-09 22:45:25.877 [http-nio-8091-exec-7] INFO  c.workflow.dag_engine.impl.UserImpl - createUser called for user: john_doe
+2026-08-09 22:45:25.878 [http-nio-8091-exec-7] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:45:25.878 [http-nio-8091-exec-7] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@70ea4a1b
+2026-08-09 22:45:25.878 [http-nio-8091-exec-7] INFO  c.w.dag_engine.services.UserServices - Creating user: john_doe
+2026-08-09 22:45:32.211 [http-nio-8091-exec-8] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:45:32.212 [http-nio-8091-exec-8] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@7dd7f369
+2026-08-09 22:45:35.898 [http-nio-8091-exec-9] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:45:35.899 [http-nio-8091-exec-9] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@597509ae
+2026-08-09 22:45:59.315 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 9.1.0.Final
+2026-08-09 22:45:59.389 [main] INFO  c.w.dag_engine.DagEngineApplication - Starting DagEngineApplication using Java 25.0.3 with PID 31852 (E:\dag-engine\target\classes started by sheet in E:\dag-engine)
+2026-08-09 22:45:59.391 [main] INFO  c.w.dag_engine.DagEngineApplication - No active profile set, falling back to 1 default profile: "default"
+2026-08-09 22:46:00.439 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-08-09 22:46:00.541 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 85 ms. Found 1 JPA repository interface.
+2026-08-09 22:46:01.190 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8091 (http)
+2026-08-09 22:46:01.209 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8091"]
+2026-08-09 22:46:01.213 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-08-09 22:46:01.214 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.22]
+2026-08-09 22:46:01.315 [main] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1838 ms
+2026-08-09 22:46:01.584 [main] INFO  org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-08-09 22:46:01.662 [main] INFO  org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-08-09 22:46:02.283 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-08-09 22:46:02.333 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-08-09 22:46:02.612 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@32f308c6
+2026-08-09 22:46:02.615 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-08-09 22:46:02.660 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-08-09 22:46:02.695 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/dag_nexus_db]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.14
+	Default catalog/schema: dag_nexus_db/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-08-09 22:46:03.910 [main] INFO  org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-08-09 22:46:04.012 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-08-09 22:46:04.127 [main] INFO  o.s.d.j.r.q.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-08-09 22:46:05.053 [main] WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-08-09 22:46:05.549 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8091"]
+2026-08-09 22:46:05.580 [main] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8091 (http) with context path '/'
+2026-08-09 22:46:05.592 [main] INFO  c.w.dag_engine.DagEngineApplication - Started DagEngineApplication in 7.001 seconds (process running for 7.667)
+2026-08-09 22:46:29.682 [http-nio-8091-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-08-09 22:46:29.683 [http-nio-8091-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-08-09 22:46:29.685 [http-nio-8091-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2026-08-09 22:46:29.835 [http-nio-8091-exec-1] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:46:29.836 [http-nio-8091-exec-1] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@7f1c5e96
+2026-08-09 22:46:36.374 [http-nio-8091-exec-2] INFO  c.w.d.controller.UserController - REST request to create user: john_doe
+2026-08-09 22:46:36.375 [http-nio-8091-exec-2] INFO  c.workflow.dag_engine.impl.UserImpl - createUser called for user: john_doe
+2026-08-09 22:46:36.375 [http-nio-8091-exec-2] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:46:36.375 [http-nio-8091-exec-2] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@3affae7c
+2026-08-09 22:46:36.375 [http-nio-8091-exec-2] INFO  c.w.dag_engine.services.UserServices - Creating user: john_doe
+2026-08-09 22:46:38.760 [http-nio-8091-exec-3] INFO  c.w.d.controller.UserController - REST request to create user: john_doe
+2026-08-09 22:46:38.760 [http-nio-8091-exec-3] INFO  c.workflow.dag_engine.impl.UserImpl - createUser called for user: john_doe
+2026-08-09 22:46:38.760 [http-nio-8091-exec-3] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:46:38.761 [http-nio-8091-exec-3] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@539ce518
+2026-08-09 22:46:38.761 [http-nio-8091-exec-3] INFO  c.w.dag_engine.services.UserServices - Creating user: john_doe
+2026-08-09 22:46:46.540 [http-nio-8091-exec-4] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:46:46.541 [http-nio-8091-exec-4] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@63e4f629
+2026-08-09 22:46:48.894 [http-nio-8091-exec-5] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:46:48.894 [http-nio-8091-exec-5] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@11e0918d
+2026-08-09 22:46:50.986 [http-nio-8091-exec-6] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:46:50.986 [http-nio-8091-exec-6] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@32116139
+2026-08-09 22:46:56.762 [http-nio-8091-exec-7] INFO  c.workflow.dag_engine.impl.UserImpl - deleteUser called for user: john_doe
+2026-08-09 22:46:56.763 [http-nio-8091-exec-7] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:46:56.763 [http-nio-8091-exec-7] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@49666943
+2026-08-09 22:47:03.362 [http-nio-8091-exec-8] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:47:03.363 [http-nio-8091-exec-8] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@61abc7f1
+2026-08-09 22:47:06.661 [http-nio-8091-exec-9] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userName=john_doe, userPassword=Password@123)]
+2026-08-09 22:47:06.662 [http-nio-8091-exec-9] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@70ea4a1b
