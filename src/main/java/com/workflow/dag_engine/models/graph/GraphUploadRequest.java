@@ -13,8 +13,10 @@ public class GraphUploadRequest {
     List<Node> node;
     List<Edge> edge;
 
+    List<String> costNames;
+
     public GraphUploadRequest(String graphName, String graphDescription, Long graphId, Long userId, List<Node> node,
-            List<Edge> edge) {
+            List<Edge> edge, List<String> costNames) {
         this.graphName = graphName;
         this.graphDescription = graphDescription;
         this.graphId = graphId;
@@ -71,11 +73,19 @@ public class GraphUploadRequest {
         this.edge = edge;
     }
 
+    public List<String> getCostNames() {
+        return costNames;
+    }
+
+    public void setCostNames(List<String> costNames) {
+        this.costNames = costNames;
+    }
+
     @Override
     public String toString() {
         return "GraphUploadRequest[graphName=" + graphName + ", graphDescription=" + graphDescription + ", graphId="
                 + graphId
-                + ", userId=" + userId + ", node=" + node + ", edge=" + edge + "]";
+                + ", userId=" + userId + ", node=" + node + ", edge=" + edge + ", costNames=" + costNames + "]";
     }
 
 }

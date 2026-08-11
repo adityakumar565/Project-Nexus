@@ -2,6 +2,10 @@ package com.workflow.dag_engine.persistence.entities;
 
 import java.time.LocalDateTime;
 
+import com.workflow.dag_engine.models.enums.CycleStatus;
+import com.workflow.dag_engine.models.enums.GraphStatus;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -9,16 +13,23 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.persistence.Version;
 
 @Entity
-@Table(name = "t_graph", schema = "workflow_graphs")
+@Table(name = "t_graph", schema = "workflow_graphs",uniqueConstraints = {
+        @UniqueConstraint(
+            name = "uk_user_graph_name", // Optional: Gives the constraint a readable name in PostgreSQL
+            columnNames = {"user_id", "graph_name"}
+        
+    })
 public class GraphEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String graphId; // UUID or UI-provided ID
+    private Long graphId; // UUID or UI-provided ID
 
+    @Column(name = "user_id")
     private String userId; // The owner's ID
 
     // --- Memory Allocation Metadata ---
@@ -28,7 +39,7 @@ public class GraphEntity {
 
     // --- Execution Metadata ---
     @Enumerated(EnumType.STRING)
-    private String isCyclic; // Enum: YES, NO, UNCHECKED
+    private CycleStatus isCyclic; // Enum: YES, NO, UNCHECKED
 
     private String implementationType; // e.g., "V1_CSR"
 
@@ -40,8 +51,30 @@ public class GraphEntity {
     @Version
     private Integer version; // Auto-managed by JPA for lock prevention
 
+    @Column(name = "graph_name")
+    private String graphName;
+
+    @Column(name = "graph_description")
+    private String graphDescription;
+
+    public String getGraphName() {
+        return graphName;
+    }
+
+    public void setGraphName(String graphName) {
+        this.graphName = graphName;
+    }
+
+    public String getGraphDescription() {
+        return graphDescription;
+    }
+
+    public void setGraphDescription(String graphDescription) {
+        this.graphDescription = graphDescription;
+    }
+
     @Enumerated(EnumType.STRING)
-    private String status; // Enum: DRAFT, VALIDATING, READY
+    private GraphStatus status; // Enum: DRAFT, VALIDATING, READY
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -49,8 +82,9 @@ public class GraphEntity {
     public GraphEntity() {
     }
 
-    public GraphEntity(String graphId, String userId, int numNodes, int numEdges, int costDimension, String isCyclic,
-            String implementationType, String jsonFilePath, String binaryFilePath, Integer version, String status,
+    public GraphEntity(Long graphId, String userId, int numNodes, int numEdges, int costDimension,
+            CycleStatus isCyclic,
+            String implementationType, String jsonFilePath, String binaryFilePath, Integer version, GraphStatus status,
             LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.graphId = graphId;
         this.userId = userId;
@@ -67,11 +101,11 @@ public class GraphEntity {
         this.updatedAt = updatedAt;
     }
 
-    public String getGraphId() {
+    public Long getGraphId() {
         return graphId;
     }
 
-    public void setGraphId(String graphId) {
+    public void setGraphId(Long graphId) {
         this.graphId = graphId;
     }
 
@@ -107,11 +141,11 @@ public class GraphEntity {
         this.costDimension = costDimension;
     }
 
-    public String getIsCyclic() {
+    public CycleStatus getIsCyclic() {
         return isCyclic;
     }
 
-    public void setIsCyclic(String isCyclic) {
+    public void setIsCyclic(CycleStatus isCyclic) {
         this.isCyclic = isCyclic;
     }
 
@@ -147,11 +181,11 @@ public class GraphEntity {
         this.version = version;
     }
 
-    public String getStatus() {
+    public GraphStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(GraphStatus status) {
         this.status = status;
     }
 
@@ -177,7 +211,8 @@ public class GraphEntity {
                 + numEdges + ", costDimension=" + costDimension + ", isCyclic=" + isCyclic
                 + ", implementationType=" + implementationType + ", jsonFilePath=" + jsonFilePath
                 + ", binaryFilePath=" + binaryFilePath + ", version=" + version + ", status=" + status
-                + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
+                + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", graphName=" + graphName
+                + ", graphDescription=" + graphDescription + "]";
     }
 
 }
