@@ -6,7 +6,10 @@ public class Cost {
 
     Map<String, Double> costVector;
 
-    Cost(Map<String, Double> costVector) {
+    public Cost() {
+    }
+
+    public Cost(Map<String, Double> costVector) {
         this.costVector = costVector;
     }
 

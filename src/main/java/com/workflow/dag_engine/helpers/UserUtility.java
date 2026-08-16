@@ -16,6 +16,9 @@ public class UserUtility {
         log.info("Inside UserEntity.UserEntity -> Input is : -> " + userRequest.toString());
 
         UserEntity userEntity = new UserEntity();
+        if (userRequest.getUserId() != null) {
+            userEntity.setUserId(userRequest.getUserId());
+        }
         userEntity.setUserName(userRequest.getUserName());
         userEntity.setPassword(userRequest.getUserPassword());
 

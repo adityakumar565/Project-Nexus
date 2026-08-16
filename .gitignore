@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Data and Logs ###
+graph_representation/
+log4jLog/

@@ -9,11 +9,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.workflow.dag_engine.interfaces.wrapper.UserInterface;
+import com.workflow.dag_engine.models.graph.UserGraphResponse;
 import com.workflow.dag_engine.models.userModel.UserRequest;
 import com.workflow.dag_engine.models.userModel.UserResponse;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/workflow-engine/user")
+@Tag(name = "User Controller", description = "Operations for user registration, validation, deletion, and graph retrieval")
 public class UserController {
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
@@ -25,6 +30,7 @@ public class UserController {
         this.userImplementation = userImplementation;
     }
 
+    @Operation(summary = "Create a new user", description = "Registers a new user in the workflow system")
     @PostMapping("/create")
     public UserResponse createUser(@RequestBody UserRequest userRequest) throws Exception {
 
@@ -33,6 +39,7 @@ public class UserController {
 
     }
 
+    @Operation(summary = "Delete an existing user", description = "Deletes a user based on user name and password credentials")
     @PostMapping("/delete")
     public UserResponse deleteUser(@RequestBody UserRequest userRequest) throws Exception {
 
@@ -40,10 +47,20 @@ public class UserController {
 
     }
 
+    @Operation(summary = "Validate user credentials", description = "Validates user existence by user ID or username and password")
     @PostMapping("/validate")
     public UserResponse validateUser(@RequestBody UserRequest userRequest) throws Exception {
 
         return userImplementation.validateUser(userRequest);
+
+    }
+
+    @Operation(summary = "Fetch user graphs", description = "Retrieves a list of all graph metadata belonging to the specified user")
+    @PostMapping("/graphs")
+    public UserGraphResponse getUserGraph(@RequestBody UserRequest userRequest) throws Exception {
+
+        log.info("REST request to fetch user graphs for: {}", userRequest);
+        return userImplementation.getUserGraph(userRequest);
 
     }
 

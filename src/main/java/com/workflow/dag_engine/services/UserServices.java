@@ -34,6 +34,13 @@ public class UserServices {
 
     }
 
+    public boolean validateUserById(Long userId) {
+        if (userId == null) {
+            return false;
+        }
+        return userRepository.existsById(userId);
+    }
+
     public boolean deleteUser(String userName, String userPassword) {
         log.info("Inside  UserService.deleteUser -> Input is : " + userName + " " + userPassword);
         try {

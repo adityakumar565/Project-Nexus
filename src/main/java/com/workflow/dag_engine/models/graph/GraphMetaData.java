@@ -5,22 +5,24 @@ import com.workflow.dag_engine.models.enums.GraphStatus;
 
 public class GraphMetaData {
 
+    private Long graphId;
     private String graphName;
     private String graphDescription;
-    private String userId;
+    private Long userId;
     private Integer numberOfEdges;
     private Integer numberOfNodes;
     private Integer costDimension;
     private CycleStatus cycleStatus;
     private GraphStatus graphStatus;
-    private String version;
+    private Integer version;
 
     public GraphMetaData() {
     }
 
-    public GraphMetaData(String graphName, String graphDescription, String userId, Integer numberOfEdges,
+    public GraphMetaData(Long graphId, String graphName, String graphDescription, Long userId, Integer numberOfEdges,
             Integer numberOfNodes, Integer costDimension, CycleStatus cycleStatus, GraphStatus graphStatus,
-            String version) {
+            Integer version) {
+        this.graphId = graphId;
         this.graphName = graphName;
         this.graphDescription = graphDescription;
         this.userId = userId;
@@ -30,6 +32,14 @@ public class GraphMetaData {
         this.cycleStatus = cycleStatus;
         this.graphStatus = graphStatus;
         this.version = version;
+    }
+
+    public Long getGraphId() {
+        return graphId;
+    }
+
+    public void setGraphId(Long graphId) {
+        this.graphId = graphId;
     }
 
     public String getGraphName() {
@@ -48,11 +58,11 @@ public class GraphMetaData {
         this.graphDescription = graphDescription;
     }
 
-    public String getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
@@ -96,20 +106,20 @@ public class GraphMetaData {
         this.graphStatus = graphStatus;
     }
 
-    public String getVersion() {
+    public Integer getVersion() {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 
     @Override
     public String toString() {
-        return "GraphMetaData [graphName=" + graphName + ", graphDescription=" + graphDescription + ", userId=" + userId
-                + ", numberOfEdges=" + numberOfEdges + ", numberOfNodes=" + numberOfNodes + ", costDimension="
-                + costDimension + ", cycleStatus=" + cycleStatus + ", graphStatus=" + graphStatus + ", version="
-                + version + "]";
+        return "GraphMetaData [graphId=" + graphId + ", graphName=" + graphName + ", graphDescription="
+                + graphDescription + ", userId=" + userId + ", numberOfEdges=" + numberOfEdges + ", numberOfNodes="
+                + numberOfNodes + ", costDimension=" + costDimension + ", cycleStatus=" + cycleStatus
+                + ", graphStatus=" + graphStatus + ", version=" + version + "]";
     }
 
 }

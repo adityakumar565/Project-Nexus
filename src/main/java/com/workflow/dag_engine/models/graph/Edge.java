@@ -9,6 +9,9 @@ public class Edge {
     String edgeName;
     String edgeDescription;
 
+    public Edge() {
+    }
+
     public Edge(Long id, Long sourceNodeId, Long targetNodeId, Cost edgeCost, String edgeName, String edgeDescription) {
         this.id = id;
         this.sourceNodeId = sourceNodeId;

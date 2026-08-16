@@ -2,7 +2,9 @@ package com.workflow.dag_engine.models.graph;
 
 import java.util.List;
 
-public class GraphUploadRequest {
+import com.workflow.dag_engine.models.validation.BaseModel;
+
+public class GraphUploadRequest extends BaseModel {
 
     String graphName;
     String graphDescription;
@@ -10,10 +12,15 @@ public class GraphUploadRequest {
 
     Long userId;
 
+    Long startNodeId;
+
     List<Node> node;
     List<Edge> edge;
 
     List<String> costNames;
+
+    public GraphUploadRequest() {
+    }
 
     public GraphUploadRequest(String graphName, String graphDescription, Long graphId, Long userId, List<Node> node,
             List<Edge> edge, List<String> costNames) {
@@ -23,6 +30,7 @@ public class GraphUploadRequest {
         this.userId = userId;
         this.node = node;
         this.edge = edge;
+        this.costNames = costNames;
     }
 
     public String getGraphName() {
@@ -55,6 +63,14 @@ public class GraphUploadRequest {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Long getStartNodeId() {
+        return startNodeId;
+    }
+
+    public void setStartNodeId(Long startNodeId) {
+        this.startNodeId = startNodeId;
     }
 
     public List<Node> getNode() {
