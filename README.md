@@ -12,18 +12,18 @@ DAG Engine employs a persistent backing store (PostgreSQL) alongside an intellig
 
 ```mermaid
 flowchart TD
-    A[Client UI] -->|1. Upload JSON Graph| B(DAG Engine API)
-    B -->|2. Extract Metadata| C{Graph Entity}
-    B -->|3. Bake Topology| D[Binary Serializer]
-    D -->|Write .bin| E[(Disk Storage)]
-    C -->|Save| F[(PostgreSQL)]
+    A["Client UI"] -->|"1. Upload JSON Graph"| B["DAG Engine API"]
+    B -->|"2. Extract Metadata"| C{"Graph Entity"}
+    B -->|"3. Bake Topology"| D["Binary Serializer"]
+    D -->|"Write .bin"| E[("Disk Storage")]
+    C -->|"Save"| F[("PostgreSQL")]
 
-    A -->|4. Load Graph| G(Graph Component Manager)
-    G -->|5. Cache Check| H{In-Memory Cache}
-    H -- Miss --> I[Load .bin from Disk]
-    I --> J[Primitive Array Kernels]
-    H -- Hit --> J
-    J -->|Render UI| A
+    A -->|"4. Load Graph"| G["Graph Component Manager"]
+    G -->|"5. Cache Check"| H{"In-Memory Cache"}
+    H -->|"Cache Miss"| I["Load .bin from Disk"]
+    I --> J["Primitive Array Kernels"]
+    H -->|"Cache Hit"| J
+    J -->|"Render UI"| A
 ```
 
 ### Graph Lifecycle Management
@@ -32,16 +32,14 @@ The lifecycle of a graph within the system ensures that memory is strictly manag
 
 ```mermaid
 stateDiagram-v2
-    [*] --> DB_Stored: Upload & Bake Graph
-    
+    [*] --> DB_Stored: Upload and Bake Graph
     DB_Stored --> In_Memory_Active: Load Graph (/get)
-    In_Memory_Active --> In_Memory_Active: Idempotent Load
-    
     In_Memory_Active --> DB_Stored: Close Graph (/close)
-    
     DB_Stored --> [*]: Delete Graph (/delete)
-    
-    In_Memory_Active --> In_Memory_Active: Delete Attempt\n(Rejected Error 2005)
+    note right of In_Memory_Active
+        Delete Attempt is Rejected
+        (Error Code 2005)
+    end note
 ```
 
 ## Key Features
@@ -74,7 +72,8 @@ The engine provides a complete CRUD and lifecycle REST API for users and graphs.
 - `POST /workflow-engine/graphs/upload`: Uploads the DAG JSON. The system bakes the topology into a primitive structure, writes it to disk as a `.bin`, and saves metadata to PostgreSQL.
 - `POST /workflow-engine/graphs/get`: Loads the graph into active memory (or hits the cache) and returns the full JSON representation back to the client for canvas rendering.
 - `POST /workflow-engine/graphs/close`: Unloads the active graph from memory, deregistering it from the `GraphComponentManager` and allowing GC to reclaim primitive arrays.
-- `POST /workflow-engine/graphs/delete`: Safely deletes the graph's `.bin` file and database record. ***Note**: This will throw an exception (Code `2005`) if the graph is currently active in memory.*
+- `POST /workflow-engine/graphs/delete`: Safely deletes the graph's `.bin` file and database record.
+  > **Note**: This will return an error (Code `2005`) if the graph is currently active in memory.
 
 ## How to Run
 
