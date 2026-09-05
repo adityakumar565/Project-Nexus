@@ -1,5 +1,7 @@
 package com.workflow.dag_engine.componentManager.graphs.interfaces.kernels;
 
+import java.util.List;
+
 public interface GraphStorageInterface {
 
     /**
@@ -59,6 +61,8 @@ public interface GraphStorageInterface {
     public float getNodeCost(int nodeId, int dimension);
 
     public float getEdgeCost(int sourceNodeId, int targetNodeId, int dimension);
+    
+    public List<String> getCostNames(); // metadata mapping
 
     // 6. Topology
     public int[] getStartNodes(); // root nodes
@@ -71,3 +75,4 @@ public interface GraphStorageInterface {
     public int getGraphSizeDim(); // size of vectors (K)
 
 }
+

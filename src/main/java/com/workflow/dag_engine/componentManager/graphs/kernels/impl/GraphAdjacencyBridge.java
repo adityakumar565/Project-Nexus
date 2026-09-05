@@ -32,7 +32,7 @@ public class GraphAdjacencyBridge implements GraphBridgeInterface {
 
     private static final Logger log = LoggerFactory.getLogger(GraphAdjacencyBridge.class);
     private static final int MAGIC_NUMBER = 0x4441474D; // "DAGM"
-    private static final int BINARY_VERSION = 1;
+    private static final int BINARY_VERSION = 2;
 
     private final GraphUtilityInterface graphUtility;
 
@@ -139,6 +139,7 @@ public class GraphAdjacencyBridge implements GraphBridgeInterface {
         storage.setFlatNodeCosts(flatNodeCosts);
         storage.setFlatEdgeCosts(flatEdgeCosts);
         storage.setSinkNodes(sinkNodes);
+        storage.setCostNames(costNames);
 
         log.info("Successfully baked graph '{}' (nodes={}, edges={}, dims={}) into Adjacency Storage",
                 request.getGraphName(), n, e, k);
@@ -176,6 +177,16 @@ public class GraphAdjacencyBridge implements GraphBridgeInterface {
             out.writeInt(startNodeId);
             out.writeLong(storage.getUserId() != null ? storage.getUserId() : 0L);
             out.writeUTF(storage.getGraphName() != null ? storage.getGraphName() : "");
+            
+            // Cost Names
+            List<String> costNames = storage.getCostNames();
+            int numCostNames = costNames != null ? costNames.size() : 0;
+            out.writeInt(numCostNames);
+            if (numCostNames > 0) {
+                for (String cName : costNames) {
+                    out.writeUTF(cName != null ? cName : "");
+                }
+            }
 
             // Index to NodeId
             int[] indexToNodeId = storage.getIndexToNodeId();
@@ -255,11 +266,21 @@ public class GraphAdjacencyBridge implements GraphBridgeInterface {
             long userId = in.readLong();
             String graphName = in.readUTF();
 
+            // Cost Names
+            List<String> costNames = new ArrayList<>();
+            if (version >= 2) {
+                int numCostNames = in.readInt();
+                for (int i = 0; i < numCostNames; i++) {
+                    costNames.add(in.readUTF());
+                }
+            }
+
             GraphDataContract contract = new GraphDataContract(n, e, k, startNodeId);
             GraphAdjacencyStorage storage = new GraphAdjacencyStorage(contract);
             storage.setUserId(userId);
             storage.setGraphName(graphName);
             storage.setBinaryFilePath(filePath);
+            storage.setCostNames(costNames);
 
             int[] indexToNodeId = new int[n];
             Map<Integer, Integer> nodeIdToIndex = new HashMap<>(n);

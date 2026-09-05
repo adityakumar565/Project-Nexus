@@ -12,8 +12,11 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.workflow.dag_engine.componentManager.graphs.factory.GraphComponentManagerFactory;
+import com.workflow.dag_engine.componentManager.paths.interfaces.kernels.PathBridgeInterface;
+import com.workflow.dag_engine.componentManager.paths.component_manager.PathComponentManagerImpl;
 import com.workflow.dag_engine.helpers.GraphUtility;
 import com.workflow.dag_engine.interfaces.componentManager.GraphComponentManagerInterface;
+import com.workflow.dag_engine.interfaces.componentManager.PathComponentManagerInterface;
 import com.workflow.dag_engine.interfaces.wrapper.GraphInterface;
 import com.workflow.dag_engine.interfaces.wrapper.UserInterface;
 import com.workflow.dag_engine.models.enums.ImplementationType;
@@ -38,6 +41,7 @@ public class GraphImpl implements GraphInterface {
     private final UserInterface objUserInterface;
     private final GraphComponentManagerInterface objGraphComponentManager;
     private final GraphComponentManagerFactory componentManagerFactory;
+    private final PathBridgeInterface pathBridge;
 
     // In-memory active graph registry keyed by graphId
     private final Map<Long, GraphComponentManagerInterface> inMemoryGraphs = new ConcurrentHashMap<>();
@@ -47,11 +51,13 @@ public class GraphImpl implements GraphInterface {
             GraphRepository objGraphRepository,
             @Qualifier("userServicesV1") UserInterface objUserInterface,
             @Qualifier("graphComponentManagerAdjacency") GraphComponentManagerInterface objGraphComponentManager,
-            GraphComponentManagerFactory componentManagerFactory) {
+            GraphComponentManagerFactory componentManagerFactory,
+            @Qualifier("pathBridge") PathBridgeInterface pathBridge) {
         this.objGraphRepository = objGraphRepository;
         this.objUserInterface = objUserInterface;
         this.objGraphComponentManager = objGraphComponentManager;
         this.componentManagerFactory = componentManagerFactory;
+        this.pathBridge = pathBridge;
     }
 
     @Override
@@ -92,6 +98,15 @@ public class GraphImpl implements GraphInterface {
         log.info(methodName + " Storage Graph Path:" + storageGraphPath);
 
         objGraphEntity.setBinaryFilePath(storageGraphPath);
+
+        // Generate and store path representation
+        PathComponentManagerInterface pathCm = new PathComponentManagerImpl(objGraphComponentManager, pathBridge);
+        String pathStoragePath = pathCm.storePaths(objGraphEntity.getGraphName());
+        
+        log.info(methodName + " Storage Path Path:" + pathStoragePath);
+        
+        objGraphEntity.setPathBinaryFilePath(pathStoragePath);
+        objGraphEntity.setPathVersion(1);
 
         ImplementationType implType = objGraphComponentManager.getImplementationType();
         objGraphEntity
@@ -281,6 +296,22 @@ public class GraphImpl implements GraphInterface {
                     }
                 } else {
                     log.info(methodName + " Binary file did not exist on disk: " + binaryFilePath);
+                }
+            }
+
+            // 6.5. Delete path binary file from disk
+            String pathBinaryFilePath = objGraphEntity.getPathBinaryFilePath();
+            if (pathBinaryFilePath != null && !pathBinaryFilePath.trim().isEmpty()) {
+                java.io.File file = new java.io.File(pathBinaryFilePath);
+                if (file.exists()) {
+                    boolean deleted = file.delete();
+                    if (deleted) {
+                        log.info(methodName + " Successfully deleted path binary file: " + pathBinaryFilePath);
+                    } else {
+                        log.warn(methodName + " Could not delete path binary file: " + pathBinaryFilePath);
+                    }
+                } else {
+                    log.info(methodName + " Path binary file did not exist on disk: " + pathBinaryFilePath);
                 }
             }
 

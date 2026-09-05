@@ -2,6 +2,7 @@ package com.workflow.dag_engine.interfaces.componentManager;
 
 import com.workflow.dag_engine.models.enums.ImplementationType;
 import com.workflow.dag_engine.models.graph.GraphUploadRequest;
+import java.util.List;
 
 /**
  * Facade interface for DAG Component Manager.
@@ -55,6 +56,8 @@ public interface GraphComponentManagerInterface {
     public int getNumberOfEdges();
 
     public int getCostDimension();
+    
+    public List<String> getCostNames();
 
     public boolean containsNode(int nodeId);
 

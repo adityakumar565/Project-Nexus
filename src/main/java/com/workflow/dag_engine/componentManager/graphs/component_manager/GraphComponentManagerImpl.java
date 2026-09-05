@@ -106,6 +106,13 @@ public class GraphComponentManagerImpl implements GraphComponentManagerInterface
     }
 
     @Override
+    public java.util.List<String> getCostNames() {
+        return activeStorage != null && activeStorage.getCostNames() != null 
+            ? activeStorage.getCostNames() 
+            : new java.util.ArrayList<>();
+    }
+
+    @Override
     public boolean containsNode(int nodeId) {
         return activeStorage != null && activeStorage.containsNode(nodeId);
     }

@@ -39,6 +39,9 @@ public class GraphAdjacencyStorage implements GraphStorageInterface {
 
     // Sinks
     private int[] sinkNodes;
+    
+    // Metadata mapping
+    private java.util.List<String> costNames;
 
     public GraphAdjacencyStorage(GraphDataContract graphDataContract) {
         this.graphDataContract = graphDataContract;
@@ -100,6 +103,15 @@ public class GraphAdjacencyStorage implements GraphStorageInterface {
 
     public void setBinaryFilePath(String binaryFilePath) {
         this.binaryFilePath = binaryFilePath;
+    }
+
+    @Override
+    public java.util.List<String> getCostNames() {
+        return costNames;
+    }
+
+    public void setCostNames(java.util.List<String> costNames) {
+        this.costNames = costNames;
     }
 
     // --- Accessors for Bridge & Internals ---

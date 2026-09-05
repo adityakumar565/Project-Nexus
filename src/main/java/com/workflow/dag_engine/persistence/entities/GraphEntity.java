@@ -70,6 +70,12 @@ public class GraphEntity {
     @Column(name = "binary_file_path", length = 500)
     private String binaryFilePath;
 
+    @Column(name = "path_binary_file_path", length = 500)
+    private String pathBinaryFilePath;
+
+    @Column(name = "path_version")
+    private Integer pathVersion;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     private GraphStatus status;
@@ -90,7 +96,7 @@ public class GraphEntity {
 
     public GraphEntity(Long graphId, Long userId, String graphName, String graphDescription, int numNodes,
             int numEdges, int costDimension, CycleStatus isCyclic, String implementationType,
-            GraphUploadRequest graphData, String binaryFilePath, Integer version, GraphStatus status,
+            GraphUploadRequest graphData, String binaryFilePath, String pathBinaryFilePath, Integer pathVersion, Integer version, GraphStatus status,
             LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.graphId = graphId;
         this.userId = userId;
@@ -103,6 +109,8 @@ public class GraphEntity {
         this.implementationType = implementationType;
         this.graphData = graphData;
         this.binaryFilePath = binaryFilePath;
+        this.pathBinaryFilePath = pathBinaryFilePath;
+        this.pathVersion = pathVersion;
         this.version = version;
         this.status = status;
         this.createdAt = createdAt;
@@ -197,6 +205,22 @@ public class GraphEntity {
         this.binaryFilePath = binaryFilePath;
     }
 
+    public String getPathBinaryFilePath() {
+        return pathBinaryFilePath;
+    }
+
+    public void setPathBinaryFilePath(String pathBinaryFilePath) {
+        this.pathBinaryFilePath = pathBinaryFilePath;
+    }
+
+    public Integer getPathVersion() {
+        return pathVersion;
+    }
+
+    public void setPathVersion(Integer pathVersion) {
+        this.pathVersion = pathVersion;
+    }
+
     public Integer getVersion() {
         return version;
     }
@@ -235,6 +259,7 @@ public class GraphEntity {
                 + ", graphDescription=" + graphDescription + ", numNodes=" + numNodes + ", numEdges=" + numEdges
                 + ", costDimension=" + costDimension + ", isCyclic=" + isCyclic + ", implementationType="
                 + implementationType + ", graphData=" + graphData + ", binaryFilePath=" + binaryFilePath
+                + ", pathBinaryFilePath=" + pathBinaryFilePath + ", pathVersion=" + pathVersion
                 + ", version=" + version + ", status=" + status + ", createdAt=" + createdAt + ", updatedAt="
                 + updatedAt + "]";
     }
