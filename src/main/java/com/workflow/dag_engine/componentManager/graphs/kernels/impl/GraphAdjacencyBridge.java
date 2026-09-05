@@ -66,14 +66,17 @@ public class GraphAdjacencyBridge implements GraphBridgeInterface {
 
         int[] indexToNodeId = new int[n];
         Map<Integer, Integer> nodeIdToIndex = new HashMap<>(n);
-        float[][] nodeWeights = new float[n][k];
+        float[] flatNodeCosts = new float[n * k];
 
         for (int i = 0; i < n; i++) {
             Node node = nodes.get(i);
             int nodeId = node.getId().intValue();
             indexToNodeId[i] = nodeId;
             nodeIdToIndex.put(nodeId, i);
-            nodeWeights[i] = graphUtility.extractCostVector(node.getNodeCost(), costNames);
+            float[] cVec = graphUtility.extractCostVector(node.getNodeCost(), costNames);
+            if (cVec != null) {
+                System.arraycopy(cVec, 0, flatNodeCosts, i * k, Math.min(k, cVec.length));
+            }
         }
 
         int[][] adjMatrix = new int[n][n];
@@ -88,7 +91,7 @@ public class GraphAdjacencyBridge implements GraphBridgeInterface {
         int[] edgeSource = new int[e];
         int[] edgeTarget = new int[e];
         Map<Integer, Integer> edgeIdToIndex = new HashMap<>(e);
-        float[][] edgeWeights = new float[e][k];
+        float[] flatEdgeCosts = new float[e * k];
 
         for (int j = 0; j < e; j++) {
             Edge edge = edges.get(j);
@@ -105,12 +108,15 @@ public class GraphAdjacencyBridge implements GraphBridgeInterface {
             Integer v = nodeIdToIndex.get(dstId);
 
             if (u != null && v != null) {
-                adjMatrix[u][v] = edgeId;
+                adjMatrix[u][v] = j; // Dense edge index (0..E-1)
                 outDegree[u]++;
                 inDegree[v]++;
             }
 
-            edgeWeights[j] = graphUtility.extractCostVector(edge.getEdgeCost(), costNames);
+            float[] eVec = graphUtility.extractCostVector(edge.getEdgeCost(), costNames);
+            if (eVec != null) {
+                System.arraycopy(eVec, 0, flatEdgeCosts, j * k, Math.min(k, eVec.length));
+            }
         }
 
         List<Integer> sinks = new ArrayList<>();
@@ -130,8 +136,8 @@ public class GraphAdjacencyBridge implements GraphBridgeInterface {
         storage.setEdgeSource(edgeSource);
         storage.setEdgeTarget(edgeTarget);
         storage.setEdgeIdToIndex(edgeIdToIndex);
-        storage.setNodeWeightsArray(nodeWeights);
-        storage.setEdgeWeightsArray(edgeWeights);
+        storage.setFlatNodeCosts(flatNodeCosts);
+        storage.setFlatEdgeCosts(flatEdgeCosts);
         storage.setSinkNodes(sinkNodes);
 
         log.info("Successfully baked graph '{}' (nodes={}, edges={}, dims={}) into Adjacency Storage",
@@ -195,20 +201,18 @@ public class GraphAdjacencyBridge implements GraphBridgeInterface {
                 out.writeInt(edgeTarget != null && i < edgeTarget.length ? edgeTarget[i] : 0);
             }
 
-            // Node Weights (N x K)
-            float[][] nodeWeights = storage.getNodeWeightsArray();
-            for (int i = 0; i < n; i++) {
-                for (int d = 0; d < k; d++) {
-                    out.writeFloat(nodeWeights != null && i < nodeWeights.length && d < nodeWeights[i].length ? nodeWeights[i][d] : 0.0f);
-                }
+            // Flat Node Costs (N x K)
+            float[] flatNodeCosts = storage.getFlatNodeCosts();
+            int totalNodeFloats = n * k;
+            for (int i = 0; i < totalNodeFloats; i++) {
+                out.writeFloat(flatNodeCosts != null && i < flatNodeCosts.length ? flatNodeCosts[i] : 0.0f);
             }
 
-            // Edge Weights (E x K)
-            float[][] edgeWeights = storage.getEdgeWeightsArray();
-            for (int i = 0; i < e; i++) {
-                for (int d = 0; d < k; d++) {
-                    out.writeFloat(edgeWeights != null && i < edgeWeights.length && d < edgeWeights[i].length ? edgeWeights[i][d] : 0.0f);
-                }
+            // Flat Edge Costs (E x K)
+            float[] flatEdgeCosts = storage.getFlatEdgeCosts();
+            int totalEdgeFloats = e * k;
+            for (int i = 0; i < totalEdgeFloats; i++) {
+                out.writeFloat(flatEdgeCosts != null && i < flatEdgeCosts.length ? flatEdgeCosts[i] : 0.0f);
             }
 
             // Sinks
@@ -293,18 +297,14 @@ public class GraphAdjacencyBridge implements GraphBridgeInterface {
                 edgeIdToIndex.put(edgeId, i);
             }
 
-            float[][] nodeWeights = new float[n][k];
-            for (int i = 0; i < n; i++) {
-                for (int d = 0; d < k; d++) {
-                    nodeWeights[i][d] = in.readFloat();
-                }
+            float[] flatNodeCosts = new float[n * k];
+            for (int i = 0; i < n * k; i++) {
+                flatNodeCosts[i] = in.readFloat();
             }
 
-            float[][] edgeWeights = new float[e][k];
-            for (int i = 0; i < e; i++) {
-                for (int d = 0; d < k; d++) {
-                    edgeWeights[i][d] = in.readFloat();
-                }
+            float[] flatEdgeCosts = new float[e * k];
+            for (int i = 0; i < e * k; i++) {
+                flatEdgeCosts[i] = in.readFloat();
             }
 
             int sinkCount = in.readInt();
@@ -322,8 +322,8 @@ public class GraphAdjacencyBridge implements GraphBridgeInterface {
             storage.setEdgeSource(edgeSource);
             storage.setEdgeTarget(edgeTarget);
             storage.setEdgeIdToIndex(edgeIdToIndex);
-            storage.setNodeWeightsArray(nodeWeights);
-            storage.setEdgeWeightsArray(edgeWeights);
+            storage.setFlatNodeCosts(flatNodeCosts);
+            storage.setFlatEdgeCosts(flatEdgeCosts);
             storage.setSinkNodes(sinkNodes);
 
             log.info("Loaded binary graph '{}' (nodes={}, edges={}, dims={}) from '{}'",

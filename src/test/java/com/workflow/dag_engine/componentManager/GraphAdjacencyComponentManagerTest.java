@@ -145,6 +145,23 @@ public class GraphAdjacencyComponentManagerTest {
         assertArrayEquals(new float[] { 25.0f, 45.0f }, graphComponentManager.getEdgeWeight(101), 0.001f);
         assertArrayEquals(new float[] { 160.0f, 18.0f }, graphComponentManager.getEdgeWeight(1, 3), 0.001f);
 
+        // Flat 1D Array Tests
+        float[] flatNodeCosts = graphComponentManager.getFlatNodeCosts();
+        assertNotNull(flatNodeCosts);
+        assertEquals(8, flatNodeCosts.length); // 4 nodes * 2 dims
+
+        float[] flatEdgeCosts = graphComponentManager.getFlatEdgeCosts();
+        assertNotNull(flatEdgeCosts);
+        assertEquals(8, flatEdgeCosts.length); // 4 edges * 2 dims
+
+        // Single dimension cost lookups
+        assertEquals(5.0f, graphComponentManager.getNodeCost(2, 1), 0.001f); // node 2, dim 1 ("time")
+        assertEquals(0.0f, graphComponentManager.getNodeCost(2, 0), 0.001f); // node 2, dim 0 ("cost")
+        assertEquals(25.0f, graphComponentManager.getEdgeCost(1, 2, 0), 0.001f); // edge 1->2, dim 0 ("cost")
+        assertEquals(45.0f, graphComponentManager.getEdgeCost(1, 2, 1), 0.001f); // edge 1->2, dim 1 ("time")
+        assertEquals(160.0f, graphComponentManager.getEdgeCost(1, 3, 0), 0.001f); // edge 1->3, dim 0 ("cost")
+        assertEquals(18.0f, graphComponentManager.getEdgeCost(1, 3, 1), 0.001f); // edge 1->3, dim 1 ("time")
+
         // 3. Unload and Load from file to test binary deserialization
         graphComponentManager.unload();
         assertEquals(0, graphComponentManager.getNumberOfNodes());

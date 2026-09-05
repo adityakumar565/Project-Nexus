@@ -52,6 +52,14 @@ public interface GraphStorageInterface {
 
     public float[][] getEdgeWeights(int[] edgeIds); // batch
 
+    public float[] getFlatNodeCosts(); // contiguous 1D array (N x K)
+
+    public float[] getFlatEdgeCosts(); // contiguous 1D array (E x K)
+
+    public float getNodeCost(int nodeId, int dimension);
+
+    public float getEdgeCost(int sourceNodeId, int targetNodeId, int dimension);
+
     // 6. Topology
     public int[] getStartNodes(); // root nodes
 

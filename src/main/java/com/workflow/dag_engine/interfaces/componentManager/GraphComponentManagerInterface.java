@@ -115,4 +115,14 @@ public interface GraphComponentManagerInterface {
 
     public float[][] getEdgeWeights(int[] edgeIds);
 
+    // Contiguous Flat 1D Arrays (for high performance / zero-copy traversal)
+    public float[] getFlatNodeCosts();
+
+    public float[] getFlatEdgeCosts();
+
+    // Specific dimension cost lookup
+    public float getNodeCost(int nodeId, int dimension);
+
+    public float getEdgeCost(int sourceNodeId, int targetNodeId, int dimension);
+
 }

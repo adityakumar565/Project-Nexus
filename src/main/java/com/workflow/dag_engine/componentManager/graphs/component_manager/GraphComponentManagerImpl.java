@@ -189,4 +189,24 @@ public class GraphComponentManagerImpl implements GraphComponentManagerInterface
         return activeStorage != null ? activeStorage.getEdgeWeights(edgeIds) : new float[0][0];
     }
 
+    @Override
+    public float[] getFlatNodeCosts() {
+        return activeStorage != null ? activeStorage.getFlatNodeCosts() : new float[0];
+    }
+
+    @Override
+    public float[] getFlatEdgeCosts() {
+        return activeStorage != null ? activeStorage.getFlatEdgeCosts() : new float[0];
+    }
+
+    @Override
+    public float getNodeCost(int nodeId, int dimension) {
+        return activeStorage != null ? activeStorage.getNodeCost(nodeId, dimension) : 0.0f;
+    }
+
+    @Override
+    public float getEdgeCost(int sourceNodeId, int targetNodeId, int dimension) {
+        return activeStorage != null ? activeStorage.getEdgeCost(sourceNodeId, targetNodeId, dimension) : 0.0f;
+    }
+
 }

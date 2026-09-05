@@ -18,7 +18,7 @@ public class GraphAdjacencyStorage implements GraphStorageInterface {
     private int[] indexToNodeId;
     private Map<Integer, Integer> nodeIdToIndex;
 
-    // Adjacency Matrix: adjMatrix[u][v] = edgeId (or -1 if no edge)
+    // Adjacency Matrix: adjMatrix[u][v] = edgeIndex (0..E-1, or -1 if no edge)
     private int[][] adjMatrix;
 
     // In/Out degrees
@@ -31,9 +31,11 @@ public class GraphAdjacencyStorage implements GraphStorageInterface {
     private int[] edgeTarget;
     private Map<Integer, Integer> edgeIdToIndex;
 
-    // Cost vectors
-    private float[][] nodeWeights; // N x K
-    private float[][] edgeWeights; // E x K
+    // Flat 1D Cost vectors: contiguous primitive arrays
+    // Node cost layout: flatNodeCosts[u * K + dimension]
+    private float[] flatNodeCosts; // N * K
+    // Edge cost layout: flatEdgeCosts[eIdx * K + dimension]
+    private float[] flatEdgeCosts; // E * K
 
     // Sinks
     private int[] sinkNodes;
@@ -61,8 +63,8 @@ public class GraphAdjacencyStorage implements GraphStorageInterface {
             this.edgeTarget = new int[e];
             this.edgeIdToIndex = new HashMap<>(e);
 
-            this.nodeWeights = new float[n][k];
-            this.edgeWeights = new float[e][k];
+            this.flatNodeCosts = new float[n * k];
+            this.flatEdgeCosts = new float[e * k];
 
             this.sinkNodes = new int[0];
         }
@@ -100,7 +102,7 @@ public class GraphAdjacencyStorage implements GraphStorageInterface {
         this.binaryFilePath = binaryFilePath;
     }
 
-    // --- Accessors for Bridge ---
+    // --- Accessors for Bridge & Internals ---
 
     public int[] getIndexToNodeId() {
         return indexToNodeId;
@@ -174,20 +176,44 @@ public class GraphAdjacencyStorage implements GraphStorageInterface {
         this.edgeIdToIndex = edgeIdToIndex;
     }
 
-    public float[][] getNodeWeightsArray() {
-        return nodeWeights;
+    public float[] getFlatNodeCosts() {
+        return flatNodeCosts;
     }
 
-    public void setNodeWeightsArray(float[][] nodeWeights) {
-        this.nodeWeights = nodeWeights;
+    public void setFlatNodeCosts(float[] flatNodeCosts) {
+        this.flatNodeCosts = flatNodeCosts;
+    }
+
+    public float[] getFlatEdgeCosts() {
+        return flatEdgeCosts;
+    }
+
+    public void setFlatEdgeCosts(float[] flatEdgeCosts) {
+        this.flatEdgeCosts = flatEdgeCosts;
+    }
+
+    public float[][] getNodeWeightsArray() {
+        int n = getNodeCount();
+        int k = getGraphSizeDim();
+        float[][] arr = new float[n][k];
+        if (flatNodeCosts != null) {
+            for (int i = 0; i < n; i++) {
+                System.arraycopy(flatNodeCosts, i * k, arr[i], 0, k);
+            }
+        }
+        return arr;
     }
 
     public float[][] getEdgeWeightsArray() {
-        return edgeWeights;
-    }
-
-    public void setEdgeWeightsArray(float[][] edgeWeights) {
-        this.edgeWeights = edgeWeights;
+        int e = getEdgeCount();
+        int k = getGraphSizeDim();
+        float[][] arr = new float[e][k];
+        if (flatEdgeCosts != null) {
+            for (int i = 0; i < e; i++) {
+                System.arraycopy(flatEdgeCosts, i * k, arr[i], 0, k);
+            }
+        }
+        return arr;
     }
 
     public void setSinkNodes(int[] sinkNodes) {
@@ -269,7 +295,8 @@ public class GraphAdjacencyStorage implements GraphStorageInterface {
         int count = 0;
         for (int v = 0; v < adjMatrix[u].length; v++) {
             if (adjMatrix[u][v] != -1 && count < outDeg) {
-                edges[count++] = adjMatrix[u][v];
+                int eIdx = adjMatrix[u][v];
+                edges[count++] = indexToEdgeId[eIdx];
             }
         }
         return edges;
@@ -286,7 +313,8 @@ public class GraphAdjacencyStorage implements GraphStorageInterface {
         int count = 0;
         for (int u = 0; u < adjMatrix.length; u++) {
             if (adjMatrix[u][v] != -1 && count < inDeg) {
-                edges[count++] = adjMatrix[u][v];
+                int eIdx = adjMatrix[u][v];
+                edges[count++] = indexToEdgeId[eIdx];
             }
         }
         return edges;
@@ -318,25 +346,32 @@ public class GraphAdjacencyStorage implements GraphStorageInterface {
         }
         int u = nodeIdToIndex.get(source);
         int v = nodeIdToIndex.get(target);
-        return adjMatrix[u][v];
+        int eIdx = adjMatrix[u][v];
+        return eIdx != -1 && indexToEdgeId != null && eIdx < indexToEdgeId.length ? indexToEdgeId[eIdx] : -1;
     }
 
     @Override
     public float[] getNodeWeights(int nodeId) {
-        if (nodeIdToIndex == null || !nodeIdToIndex.containsKey(nodeId) || nodeWeights == null) {
-            return new float[getGraphSizeDim()];
+        int k = getGraphSizeDim();
+        if (nodeIdToIndex == null || !nodeIdToIndex.containsKey(nodeId) || flatNodeCosts == null) {
+            return new float[k];
         }
         int u = nodeIdToIndex.get(nodeId);
-        return nodeWeights[u];
+        float[] weights = new float[k];
+        System.arraycopy(flatNodeCosts, u * k, weights, 0, k);
+        return weights;
     }
 
     @Override
     public float[] getEdgeWeights(int edgeId) {
-        if (edgeIdToIndex == null || !edgeIdToIndex.containsKey(edgeId) || edgeWeights == null) {
-            return new float[getGraphSizeDim()];
+        int k = getGraphSizeDim();
+        if (edgeIdToIndex == null || !edgeIdToIndex.containsKey(edgeId) || flatEdgeCosts == null) {
+            return new float[k];
         }
         int eIdx = edgeIdToIndex.get(edgeId);
-        return edgeWeights[eIdx];
+        float[] weights = new float[k];
+        System.arraycopy(flatEdgeCosts, eIdx * k, weights, 0, k);
+        return weights;
     }
 
     @Override
@@ -361,6 +396,32 @@ public class GraphAdjacencyStorage implements GraphStorageInterface {
             batch[i] = getEdgeWeights(edgeIds[i]);
         }
         return batch;
+    }
+
+    @Override
+    public float getNodeCost(int nodeId, int dimension) {
+        int k = getGraphSizeDim();
+        if (nodeIdToIndex == null || !nodeIdToIndex.containsKey(nodeId) || flatNodeCosts == null || dimension < 0 || dimension >= k) {
+            return 0.0f;
+        }
+        int u = nodeIdToIndex.get(nodeId);
+        return flatNodeCosts[u * k + dimension];
+    }
+
+    @Override
+    public float getEdgeCost(int sourceNodeId, int targetNodeId, int dimension) {
+        int k = getGraphSizeDim();
+        if (nodeIdToIndex == null || !nodeIdToIndex.containsKey(sourceNodeId) || !nodeIdToIndex.containsKey(targetNodeId)
+                || adjMatrix == null || flatEdgeCosts == null || dimension < 0 || dimension >= k) {
+            return 0.0f;
+        }
+        int u = nodeIdToIndex.get(sourceNodeId);
+        int v = nodeIdToIndex.get(targetNodeId);
+        int eIdx = adjMatrix[u][v];
+        if (eIdx == -1) {
+            return 0.0f;
+        }
+        return flatEdgeCosts[eIdx * k + dimension];
     }
 
     @Override

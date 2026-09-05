@@ -1281,3 +1281,135 @@ Caused by: org.postgresql.util.PSQLException: ERROR: duplicate key value violate
 2026-08-16 23:12:01.180 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
 2026-08-16 23:12:01.183 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
 2026-08-16 23:12:01.188 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-09-05 15:08:18.593 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 9.1.0.Final
+2026-09-05 15:08:18.630 [main] INFO  c.w.d.c.GraphAdjacencyComponentManagerTest - Starting GraphAdjacencyComponentManagerTest using Java 25.0.3 with PID 27136 (started by sheet in E:\dag-engine)
+2026-09-05 15:08:18.632 [main] INFO  c.w.d.c.GraphAdjacencyComponentManagerTest - No active profile set, falling back to 1 default profile: "default"
+2026-09-05 15:08:20.139 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-05 15:08:20.269 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 111 ms. Found 2 JPA repository interfaces.
+2026-09-05 15:08:21.028 [main] INFO  org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-09-05 15:08:21.134 [main] INFO  org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-09-05 15:08:21.885 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-05 15:08:21.937 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-09-05 15:08:22.292 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@59cde35
+2026-09-05 15:08:22.294 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-09-05 15:08:22.364 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-09-05 15:08:22.408 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/dag_nexus_db]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.14
+	Default catalog/schema: dag_nexus_db/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-05 15:08:23.875 [main] INFO  org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-05 15:08:24.106 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-05 15:08:24.232 [main] INFO  o.s.d.j.r.q.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-09-05 15:08:25.447 [main] WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-05 15:08:26.199 [main] INFO  c.w.d.c.GraphAdjacencyComponentManagerTest - Started GraphAdjacencyComponentManagerTest in 8.16 seconds (process running for 10.085)
+2026-09-05 15:08:26.688 [main] INFO  c.w.d.c.g.c.GraphComponentManagerImpl - Transforming and storing graph: Commute_Route_Optimization
+2026-09-05 15:08:26.692 [main] INFO  c.w.d.c.g.k.i.GraphAdjacencyBridge - Successfully baked graph 'Commute_Route_Optimization' (nodes=4, edges=4, dims=2) into Adjacency Storage
+2026-09-05 15:08:26.696 [main] INFO  c.w.d.c.g.k.i.GraphAdjacencyBridge - Saved binary graph to 'graph_representation\component_representation\10_Commute_Route_Optimization.bin' (file size=260 bytes)
+2026-09-05 15:08:26.697 [main] INFO  c.w.d.c.g.c.GraphComponentManagerImpl - Graph 'Commute_Route_Optimization' saved to: graph_representation\component_representation\10_Commute_Route_Optimization.bin
+2026-09-05 15:08:26.704 [main] INFO  c.w.d.c.g.c.GraphComponentManagerImpl - Unloading active graph storage
+2026-09-05 15:08:26.704 [main] INFO  c.w.d.c.g.c.GraphComponentManagerImpl - Loading binary graph from: graph_representation\component_representation\10_Commute_Route_Optimization.bin
+2026-09-05 15:08:26.715 [main] INFO  c.w.d.c.g.k.i.GraphAdjacencyBridge - Loaded binary graph 'Commute_Route_Optimization' (nodes=4, edges=4, dims=2) from 'graph_representation\component_representation\10_Commute_Route_Optimization.bin'
+2026-09-05 15:08:26.800 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-05 15:08:26.804 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-09-05 15:08:26.808 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-09-05 15:09:42.483 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 9.1.0.Final
+2026-09-05 15:09:42.516 [main] INFO  c.w.d.c.GraphAdjacencyComponentManagerTest - Starting GraphAdjacencyComponentManagerTest using Java 25.0.3 with PID 16380 (started by sheet in E:\dag-engine)
+2026-09-05 15:09:42.518 [main] INFO  c.w.d.c.GraphAdjacencyComponentManagerTest - No active profile set, falling back to 1 default profile: "default"
+2026-09-05 15:09:43.828 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-09-05 15:09:43.946 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 103 ms. Found 2 JPA repository interfaces.
+2026-09-05 15:09:44.623 [main] INFO  org.hibernate.orm.jpa - HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-09-05 15:09:44.716 [main] INFO  org.hibernate.orm.core - HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-09-05 15:09:45.491 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-09-05 15:09:45.546 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-09-05 15:09:45.846 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@1bde9a22
+2026-09-05 15:09:45.849 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-09-05 15:09:45.896 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-09-05 15:09:45.935 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/dag_nexus_db]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 16.14
+	Default catalog/schema: dag_nexus_db/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-09-05 15:09:47.329 [main] INFO  org.hibernate.orm.core - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-09-05 15:09:47.471 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-09-05 15:09:47.601 [main] INFO  o.s.d.j.r.q.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-09-05 15:09:48.798 [main] WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-09-05 15:09:49.531 [main] INFO  c.w.d.c.GraphAdjacencyComponentManagerTest - Started GraphAdjacencyComponentManagerTest in 7.533 seconds (process running for 9.374)
+2026-09-05 15:09:50.024 [main] INFO  c.w.d.c.g.c.GraphComponentManagerImpl - Transforming and storing graph: Commute_Route_Optimization
+2026-09-05 15:09:50.030 [main] INFO  c.w.d.c.g.k.i.GraphAdjacencyBridge - Successfully baked graph 'Commute_Route_Optimization' (nodes=4, edges=4, dims=2) into Adjacency Storage
+2026-09-05 15:09:50.033 [main] INFO  c.w.d.c.g.k.i.GraphAdjacencyBridge - Saved binary graph to 'graph_representation\component_representation\10_Commute_Route_Optimization.bin' (file size=260 bytes)
+2026-09-05 15:09:50.034 [main] INFO  c.w.d.c.g.c.GraphComponentManagerImpl - Graph 'Commute_Route_Optimization' saved to: graph_representation\component_representation\10_Commute_Route_Optimization.bin
+2026-09-05 15:09:50.040 [main] INFO  c.w.d.c.g.c.GraphComponentManagerImpl - Unloading active graph storage
+2026-09-05 15:09:50.041 [main] INFO  c.w.d.c.g.c.GraphComponentManagerImpl - Loading binary graph from: graph_representation\component_representation\10_Commute_Route_Optimization.bin
+2026-09-05 15:09:50.043 [main] INFO  c.w.d.c.g.k.i.GraphAdjacencyBridge - Loaded binary graph 'Commute_Route_Optimization' (nodes=4, edges=4, dims=2) from 'graph_representation\component_representation\10_Commute_Route_Optimization.bin'
+2026-09-05 15:09:50.080 [main] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.workflow.dag_engine.DagEngineApplicationTests]: DagEngineApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-05 15:09:50.099 [main] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.workflow.dag_engine.DagEngineApplication for test class com.workflow.dag_engine.DagEngineApplicationTests
+2026-09-05 15:09:50.100 [main] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.workflow.dag_engine.DagEngineApplicationTests]: DagEngineApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-05 15:09:50.102 [main] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.workflow.dag_engine.DagEngineApplication for test class com.workflow.dag_engine.DagEngineApplicationTests
+2026-09-05 15:09:50.125 [main] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.workflow.dag_engine.Graph.GraphRequestTest]: GraphRequestTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-05 15:09:50.152 [main] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.workflow.dag_engine.DagEngineApplication for test class com.workflow.dag_engine.Graph.GraphRequestTest
+2026-09-05 15:09:50.153 [main] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.workflow.dag_engine.Graph.GraphRequestTest]: GraphRequestTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-05 15:09:50.155 [main] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.workflow.dag_engine.DagEngineApplication for test class com.workflow.dag_engine.Graph.GraphRequestTest
+2026-09-05 15:09:50.164 [main] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserImpl.getUserGraph -->  userRequest:[UserRequest(userId=-999, userName=null, userPassword=null)]
+2026-09-05 15:09:50.360 [main] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.workflow.dag_engine.journey.UserJourneyIntegrationTest]: UserJourneyIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-05 15:09:50.380 [main] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.workflow.dag_engine.DagEngineApplication for test class com.workflow.dag_engine.journey.UserJourneyIntegrationTest
+2026-09-05 15:09:50.381 [main] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.workflow.dag_engine.journey.UserJourneyIntegrationTest]: UserJourneyIntegrationTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-05 15:09:50.383 [main] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.workflow.dag_engine.DagEngineApplication for test class com.workflow.dag_engine.journey.UserJourneyIntegrationTest
+2026-09-05 15:09:50.520 [main] INFO  c.w.d.j.UserJourneyIntegrationTest - --- Step 1: Creating User [journey_user_alice] ---
+2026-09-05 15:09:50.521 [main] INFO  c.workflow.dag_engine.impl.UserImpl - createUser called for user: journey_user_alice
+2026-09-05 15:09:50.521 [main] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userId=null, userName=journey_user_alice, userPassword=AliceSecret123!)]
+2026-09-05 15:09:50.521 [main] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@15da3ce9
+2026-09-05 15:09:50.521 [main] INFO  c.w.dag_engine.services.UserServices - Creating user: journey_user_alice
+2026-09-05 15:09:50.597 [main] INFO  c.w.d.j.UserJourneyIntegrationTest - User created successfully with ID: 13
+2026-09-05 15:09:50.598 [main] INFO  c.w.d.j.UserJourneyIntegrationTest - --- Step 2: Uploading Graph for User ID [13] ---
+2026-09-05 15:09:50.601 [main] INFO  c.workflow.dag_engine.impl.GraphImpl - Inside GraphImpl.uploadUserGraph -->  graphUploadRequest:GraphUploadRequest[graphName=Commute_Journey_Pipeline, graphDescription=Diamond DAG test journey, graphId=null, userId=13, node=[Node[id=1, name=Home, description=Origin, nodeCost=Cost[costVector={cost=0.0, time=0.0}], incomingEdges=[], outgoingEdges=[]], Node[id=2, name=Bus, description=Bus Stop, nodeCost=Cost[costVector={cost=0.0, time=5.0}], incomingEdges=[], outgoingEdges=[]], Node[id=3, name=Auto, description=Auto Stand, nodeCost=Cost[costVector={cost=0.0, time=2.0}], incomingEdges=[], outgoingEdges=[]], Node[id=4, name=Office, description=Destination, nodeCost=Cost[costVector={cost=0.0, time=0.0}], incomingEdges=[], outgoingEdges=[]]], edge=[Edge[id=101, sourceNodeId=1, targetNodeId=2, edgeCost=Cost[costVector={cost=25.0, time=45.0}], edgeName=HomeToBus, edgeDescription=Edge from Home to Bus], Edge[id=102, sourceNodeId=1, targetNodeId=3, edgeCost=Cost[costVector={cost=160.0, time=18.0}], edgeName=HomeToAuto, edgeDescription=Edge from Home to Auto], Edge[id=103, sourceNodeId=2, targetNodeId=4, edgeCost=Cost[costVector={cost=0.0, time=10.0}], edgeName=BusToOffice, edgeDescription=Edge from Bus to Office], Edge[id=104, sourceNodeId=3, targetNodeId=4, edgeCost=Cost[costVector={cost=0.0, time=5.0}], edgeName=AutoToOffice, edgeDescription=Edge from Auto to Office]], costNames=[cost, time]]
+2026-09-05 15:09:50.608 [main] INFO  c.w.dag_engine.helpers.GraphUtility - Inside GraphUtility.convertGraphUploadRequestToGraphEntity -->  graphUploadRequest:GraphUploadRequest[graphName=Commute_Journey_Pipeline, graphDescription=Diamond DAG test journey, graphId=null, userId=13, node=[Node[id=1, name=Home, description=Origin, nodeCost=Cost[costVector={cost=0.0, time=0.0}], incomingEdges=[], outgoingEdges=[]], Node[id=2, name=Bus, description=Bus Stop, nodeCost=Cost[costVector={cost=0.0, time=5.0}], incomingEdges=[], outgoingEdges=[]], Node[id=3, name=Auto, description=Auto Stand, nodeCost=Cost[costVector={cost=0.0, time=2.0}], incomingEdges=[], outgoingEdges=[]], Node[id=4, name=Office, description=Destination, nodeCost=Cost[costVector={cost=0.0, time=0.0}], incomingEdges=[], outgoingEdges=[]]], edge=[Edge[id=101, sourceNodeId=1, targetNodeId=2, edgeCost=Cost[costVector={cost=25.0, time=45.0}], edgeName=HomeToBus, edgeDescription=Edge from Home to Bus], Edge[id=102, sourceNodeId=1, targetNodeId=3, edgeCost=Cost[costVector={cost=160.0, time=18.0}], edgeName=HomeToAuto, edgeDescription=Edge from Home to Auto], Edge[id=103, sourceNodeId=2, targetNodeId=4, edgeCost=Cost[costVector={cost=0.0, time=10.0}], edgeName=BusToOffice, edgeDescription=Edge from Bus to Office], Edge[id=104, sourceNodeId=3, targetNodeId=4, edgeCost=Cost[costVector={cost=0.0, time=5.0}], edgeName=AutoToOffice, edgeDescription=Edge from Auto to Office]], costNames=[cost, time]]
+2026-09-05 15:09:50.609 [main] INFO  c.w.dag_engine.helpers.GraphUtility - Inside GraphUtility.isGraphCyclic -->  graphUploadRequest:GraphUploadRequest[graphName=Commute_Journey_Pipeline, graphDescription=Diamond DAG test journey, graphId=null, userId=13, node=[Node[id=1, name=Home, description=Origin, nodeCost=Cost[costVector={cost=0.0, time=0.0}], incomingEdges=[], outgoingEdges=[]], Node[id=2, name=Bus, description=Bus Stop, nodeCost=Cost[costVector={cost=0.0, time=5.0}], incomingEdges=[], outgoingEdges=[]], Node[id=3, name=Auto, description=Auto Stand, nodeCost=Cost[costVector={cost=0.0, time=2.0}], incomingEdges=[], outgoingEdges=[]], Node[id=4, name=Office, description=Destination, nodeCost=Cost[costVector={cost=0.0, time=0.0}], incomingEdges=[], outgoingEdges=[]]], edge=[Edge[id=101, sourceNodeId=1, targetNodeId=2, edgeCost=Cost[costVector={cost=25.0, time=45.0}], edgeName=HomeToBus, edgeDescription=Edge from Home to Bus], Edge[id=102, sourceNodeId=1, targetNodeId=3, edgeCost=Cost[costVector={cost=160.0, time=18.0}], edgeName=HomeToAuto, edgeDescription=Edge from Home to Auto], Edge[id=103, sourceNodeId=2, targetNodeId=4, edgeCost=Cost[costVector={cost=0.0, time=10.0}], edgeName=BusToOffice, edgeDescription=Edge from Bus to Office], Edge[id=104, sourceNodeId=3, targetNodeId=4, edgeCost=Cost[costVector={cost=0.0, time=5.0}], edgeName=AutoToOffice, edgeDescription=Edge from Auto to Office]], costNames=[cost, time]]
+2026-09-05 15:09:50.612 [main] INFO  c.workflow.dag_engine.impl.GraphImpl - Inside GraphImpl.uploadUserGraph -->  Returning objGraphEntity:GraphEntity [graphId=null, userId=13, graphName=Commute_Journey_Pipeline, graphDescription=Diamond DAG test journey, numNodes=4, numEdges=4, costDimension=2, isCyclic=ACYCLIC, implementationType=V1_CSR, graphData=GraphUploadRequest[graphName=Commute_Journey_Pipeline, graphDescription=Diamond DAG test journey, graphId=null, userId=13, node=[Node[id=1, name=Home, description=Origin, nodeCost=Cost[costVector={cost=0.0, time=0.0}], incomingEdges=[], outgoingEdges=[]], Node[id=2, name=Bus, description=Bus Stop, nodeCost=Cost[costVector={cost=0.0, time=5.0}], incomingEdges=[], outgoingEdges=[]], Node[id=3, name=Auto, description=Auto Stand, nodeCost=Cost[costVector={cost=0.0, time=2.0}], incomingEdges=[], outgoingEdges=[]], Node[id=4, name=Office, description=Destination, nodeCost=Cost[costVector={cost=0.0, time=0.0}], incomingEdges=[], outgoingEdges=[]]], edge=[Edge[id=101, sourceNodeId=1, targetNodeId=2, edgeCost=Cost[costVector={cost=25.0, time=45.0}], edgeName=HomeToBus, edgeDescription=Edge from Home to Bus], Edge[id=102, sourceNodeId=1, targetNodeId=3, edgeCost=Cost[costVector={cost=160.0, time=18.0}], edgeName=HomeToAuto, edgeDescription=Edge from Home to Auto], Edge[id=103, sourceNodeId=2, targetNodeId=4, edgeCost=Cost[costVector={cost=0.0, time=10.0}], edgeName=BusToOffice, edgeDescription=Edge from Bus to Office], Edge[id=104, sourceNodeId=3, targetNodeId=4, edgeCost=Cost[costVector={cost=0.0, time=5.0}], edgeName=AutoToOffice, edgeDescription=Edge from Auto to Office]], costNames=[cost, time]], binaryFilePath=null, version=null, status=DRAFT, createdAt=null, updatedAt=null]
+2026-09-05 15:09:50.613 [main] INFO  c.w.d.c.g.c.GraphComponentManagerImpl - Transforming and storing graph: Commute_Journey_Pipeline
+2026-09-05 15:09:50.613 [main] INFO  c.w.d.c.g.k.i.GraphAdjacencyBridge - Successfully baked graph 'Commute_Journey_Pipeline' (nodes=4, edges=4, dims=2) into Adjacency Storage
+2026-09-05 15:09:50.614 [main] INFO  c.w.d.c.g.k.i.GraphAdjacencyBridge - Saved binary graph to 'graph_representation\component_representation\13_Commute_Journey_Pipeline.bin' (file size=258 bytes)
+2026-09-05 15:09:50.614 [main] INFO  c.w.d.c.g.c.GraphComponentManagerImpl - Graph 'Commute_Journey_Pipeline' saved to: graph_representation\component_representation\13_Commute_Journey_Pipeline.bin
+2026-09-05 15:09:50.614 [main] INFO  c.workflow.dag_engine.impl.GraphImpl - Inside GraphImpl.uploadUserGraph -->  Storage Graph Path:graph_representation\component_representation\13_Commute_Journey_Pipeline.bin
+2026-09-05 15:09:50.797 [main] INFO  c.workflow.dag_engine.impl.GraphImpl - Inside GraphImpl.uploadUserGraph -->  Returning graphResponse:GraphResponse[graphName=Commute_Journey_Pipeline, graphDescription=Diamond DAG test journey, objErrorDetails=ErrorDetails[errorCode=0, errorMessage=SUCCESS]]
+2026-09-05 15:09:50.827 [main] INFO  c.w.d.j.UserJourneyIntegrationTest - Graph uploaded with ID [10] and binary path [graph_representation\component_representation\13_Commute_Journey_Pipeline.bin]
+2026-09-05 15:09:50.827 [main] INFO  c.w.d.j.UserJourneyIntegrationTest - --- Step 3: Loading Graph [10] into Memory ---
+2026-09-05 15:09:50.828 [main] INFO  c.workflow.dag_engine.impl.GraphImpl - Inside GraphImpl.getGraphById -->  graphMetaData: GraphMetaData [graphId=10, graphName=Commute_Journey_Pipeline, graphDescription=null, userId=13, numberOfEdges=null, numberOfNodes=null, costDimension=null, cycleStatus=null, graphStatus=null, version=null]
+2026-09-05 15:09:50.840 [main] INFO  c.workflow.dag_engine.impl.GraphImpl - Inside GraphImpl.getGraphById -->  Graph 10 was already active in memory
+2026-09-05 15:09:50.840 [main] INFO  c.w.d.j.UserJourneyIntegrationTest - --- Step 4: Loading Graph [10] Again (Already In Memory) ---
+2026-09-05 15:09:50.840 [main] INFO  c.workflow.dag_engine.impl.GraphImpl - Inside GraphImpl.getGraphById -->  graphMetaData: GraphMetaData [graphId=10, graphName=Commute_Journey_Pipeline, graphDescription=null, userId=13, numberOfEdges=null, numberOfNodes=null, costDimension=null, cycleStatus=null, graphStatus=null, version=null]
+2026-09-05 15:09:50.845 [main] INFO  c.workflow.dag_engine.impl.GraphImpl - Inside GraphImpl.getGraphById -->  Graph 10 was already active in memory
+2026-09-05 15:09:50.845 [main] INFO  c.w.d.j.UserJourneyIntegrationTest - --- Step 5: Attempting to Delete Graph [10] While Active in Memory ---
+2026-09-05 15:09:50.845 [main] INFO  c.workflow.dag_engine.impl.GraphImpl - Inside GraphImpl.deleteGraph -->  graphMetaData: GraphMetaData [graphId=10, graphName=Commute_Journey_Pipeline, graphDescription=null, userId=13, numberOfEdges=null, numberOfNodes=null, costDimension=null, cycleStatus=null, graphStatus=null, version=null]
+2026-09-05 15:09:50.850 [main] ERROR c.workflow.dag_engine.impl.GraphImpl - Inside GraphImpl.deleteGraph -->  ApplicationException: Cannot delete graph: Graph is currently active in memory. Please close the graph first.
+2026-09-05 15:09:50.854 [main] INFO  c.w.d.j.UserJourneyIntegrationTest - --- Step 6: Closing / Unloading Graph [10] ---
+2026-09-05 15:09:50.854 [main] INFO  c.workflow.dag_engine.impl.GraphImpl - Inside GraphImpl.closeGraphById -->  graphMetaData: GraphMetaData [graphId=10, graphName=Commute_Journey_Pipeline, graphDescription=null, userId=13, numberOfEdges=null, numberOfNodes=null, costDimension=null, cycleStatus=null, graphStatus=null, version=null]
+2026-09-05 15:09:50.854 [main] INFO  c.w.d.c.g.c.GraphComponentManagerImpl - Unloading active graph storage
+2026-09-05 15:09:50.854 [main] INFO  c.workflow.dag_engine.impl.GraphImpl - Inside GraphImpl.closeGraphById -->  Graph 10 successfully unloaded from memory
+2026-09-05 15:09:50.855 [main] INFO  c.w.d.j.UserJourneyIntegrationTest - --- Step 7: Deleting Graph [10] After Closing ---
+2026-09-05 15:09:50.855 [main] INFO  c.workflow.dag_engine.impl.GraphImpl - Inside GraphImpl.deleteGraph -->  graphMetaData: GraphMetaData [graphId=10, graphName=Commute_Journey_Pipeline, graphDescription=null, userId=13, numberOfEdges=null, numberOfNodes=null, costDimension=null, cycleStatus=null, graphStatus=null, version=null]
+2026-09-05 15:09:50.861 [main] INFO  c.workflow.dag_engine.impl.GraphImpl - Inside GraphImpl.deleteGraph -->  Successfully deleted binary file: graph_representation\component_representation\13_Commute_Journey_Pipeline.bin
+2026-09-05 15:09:50.885 [main] INFO  c.workflow.dag_engine.impl.GraphImpl - Inside GraphImpl.deleteGraph -->  Successfully deleted graph entity with id 10
+2026-09-05 15:09:50.887 [main] INFO  c.w.d.j.UserJourneyIntegrationTest - Graph [10] and binary file [graph_representation\component_representation\13_Commute_Journey_Pipeline.bin] deleted successfully
+2026-09-05 15:09:50.887 [main] INFO  c.w.d.j.UserJourneyIntegrationTest - --- Step 8: Deleting User [13] ---
+2026-09-05 15:09:50.887 [main] INFO  c.workflow.dag_engine.impl.UserImpl - deleteUser called for user: journey_user_alice
+2026-09-05 15:09:50.887 [main] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Input is : -> [UserRequest(userId=13, userName=journey_user_alice, userPassword=AliceSecret123!)]
+2026-09-05 15:09:50.887 [main] INFO  c.workflow.dag_engine.impl.UserImpl - Inside UserEntity.UserEntity -> Output is : -> com.workflow.dag_engine.persistence.entities.UserEntity@1ee1c0cc
+2026-09-05 15:09:50.900 [main] INFO  c.w.d.j.UserJourneyIntegrationTest - User [journey_user_alice] deleted successfully. User journey completed!
+2026-09-05 15:09:50.927 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-09-05 15:09:50.931 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-09-05 15:09:50.936 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
