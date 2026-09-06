@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.io.File;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -414,6 +415,10 @@ public class GraphImpl implements GraphInterface {
             // Complex Update: Re-generate binaries and overwrite
             GraphEntity entity = objGraphRepository.findById(request.getGraphId()).orElseThrow(() -> new ApplicationException("404", "Graph Not Found"));
             
+            // 1. Fetch old file paths beforehand and store references
+            String oldBinaryFilePath = entity.getBinaryFilePath();
+            String oldPathBinaryFilePath = entity.getPathBinaryFilePath();
+
             // Release memory if loaded
             if (inMemoryGraphs.containsKey(request.getGraphId())) {
                 GraphComponentManagerInterface manager = inMemoryGraphs.remove(request.getGraphId());
@@ -444,6 +449,10 @@ public class GraphImpl implements GraphInterface {
             // Reload into memory
             inMemoryGraphs.put(entity.getGraphId(), objGraphComponentManager);
             
+            // 2. After successful commit of new files/entity, delete the old files before returning
+            deleteFileIfExists(oldBinaryFilePath, storageGraphPath, "old binary graph file");
+            deleteFileIfExists(oldPathBinaryFilePath, pathStoragePath, "old path binary file");
+
             GraphResponse graphResponse = new GraphResponse();
             graphResponse.setObjErrorDetails(new ErrorDetails(1));
             graphResponse.setGraphName(entity.getGraphName());
@@ -558,6 +567,34 @@ public class GraphImpl implements GraphInterface {
         }
 
         return response;
+    }
+
+    private void deleteFileIfExists(String oldPath, String newPath, String fileDescription) {
+        if (oldPath == null || oldPath.trim().isEmpty()) {
+            return;
+        }
+        try {
+            File oldFile = new File(oldPath);
+            if (!oldFile.exists()) {
+                log.info("Inside GraphImpl.deleteFileIfExists --> " + fileDescription + " did not exist on disk: " + oldPath);
+                return;
+            }
+            if (newPath != null && !newPath.trim().isEmpty()) {
+                File newFile = new File(newPath);
+                if (oldFile.getCanonicalPath().equalsIgnoreCase(newFile.getCanonicalPath())) {
+                    log.info("Inside GraphImpl.deleteFileIfExists --> " + fileDescription + " path matches new file path (" + oldPath + "), skipping deletion as it was overwritten in place.");
+                    return;
+                }
+            }
+            boolean deleted = oldFile.delete();
+            if (deleted) {
+                log.info("Inside GraphImpl.deleteFileIfExists --> Successfully deleted " + fileDescription + ": " + oldPath);
+            } else {
+                log.warn("Inside GraphImpl.deleteFileIfExists --> Could not delete " + fileDescription + ": " + oldPath);
+            }
+        } catch (Exception ex) {
+            log.error("Inside GraphImpl.deleteFileIfExists --> Exception occurred while deleting " + fileDescription + " at " + oldPath + ": ", ex);
+        }
     }
 
 }

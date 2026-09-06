@@ -70,6 +70,7 @@ const gvCostDimensions = document.getElementById('gv-cost-dimensions');
 const zoomInBtn = document.getElementById('zoom-in-btn');
 const zoomOutBtn = document.getElementById('zoom-out-btn');
 const zoomFitBtn = document.getElementById('zoom-fit-btn');
+const resetLayoutBtn = document.getElementById('reset-layout-btn');
 const zoomLevelBadge = document.getElementById('zoom-level-badge');
 const graphSvg = document.getElementById('graph-svg');
 const graphViewLoading = document.getElementById('graph-view-loading');
@@ -223,6 +224,7 @@ backToDashboardBtn.addEventListener('click', backToDashboard);
 zoomInBtn.addEventListener('click', zoomIn);
 zoomOutBtn.addEventListener('click', zoomOut);
 zoomFitBtn.addEventListener('click', fitGraphToScreen);
+if (resetLayoutBtn) resetLayoutBtn.addEventListener('click', resetGraphLayout);
 closeSidePanelBtn.addEventListener('click', closeSidePanel);
 reopenSidePanelBtn.addEventListener('click', openSidePanel);
 
@@ -1010,22 +1012,67 @@ function renderGraphVisualization(graphUploadRequest, graphResponse, preserveEdi
     });
 
     // Space layers along X (left to right) and spread along Y
-    const layerSpacingX = Math.max(220, Math.min(360, (width * 0.65) / (maxRank + 1 || 1)));
+    const layerSpacingX = Math.max(220, Math.min(360, (width * 0.7) / (maxRank + 1 || 1)));
     let maxNodesInRank = 1;
     rankGroups.forEach(group => {
         if (group.length > maxNodesInRank) maxNodesInRank = group.length;
     });
-    const nodeSpacingY = Math.max(130, Math.min(200, (height * 0.6) / maxNodesInRank));
+    const nodeSpacingY = Math.max(150, Math.min(240, (height * 0.65) / maxNodesInRank));
+
+    // Sort nodes in each rank r >= 1 by average targetY of their incoming parents to minimize edge crossings (Barycenter heuristic)
+    for (let r = 1; r <= maxRank; r++) {
+        const group = rankGroups.get(r);
+        if (!group || group.length <= 1) continue;
+        group.sort((a, b) => {
+            const aParents = edges.filter(e => {
+                const tid = typeof e.target === 'object' ? e.target.id : e.target;
+                return tid === a.id;
+            });
+            const bParents = edges.filter(e => {
+                const tid = typeof e.target === 'object' ? e.target.id : e.target;
+                return tid === b.id;
+            });
+            const aAvgY = aParents.length > 0
+                ? aParents.reduce((sum, e) => {
+                    const sid = typeof e.source === 'object' ? e.source.id : e.source;
+                    const src = nodeMap.get(sid);
+                    return sum + (src && src.targetY != null ? src.targetY : centerY);
+                }, 0) / aParents.length
+                : centerY;
+            const bAvgY = bParents.length > 0
+                ? bParents.reduce((sum, e) => {
+                    const sid = typeof e.source === 'object' ? e.source.id : e.source;
+                    const src = nodeMap.get(sid);
+                    return sum + (src && src.targetY != null ? src.targetY : centerY);
+                }, 0) / bParents.length
+                : centerY;
+            return aAvgY - bAvgY;
+        });
+    }
 
     rankGroups.forEach((group, r) => {
         const x = centerX + (r - maxRank / 2) * layerSpacingX;
-        group.forEach((node, idx) => {
-            const y = centerY + (idx - (group.length - 1) / 2) * nodeSpacingY;
-            node.x = x;
-            node.y = y;
+        if (group.length === 1) {
+            const prevGroup = rankGroups.get(r - 1);
+            const nextGroup = rankGroups.get(r + 1);
+            const hasAdjacentMulti = (prevGroup && prevGroup.length > 1) || (nextGroup && nextGroup.length > 1);
+            // Stagger single-node ranks along a gentle wave to prevent 1D collinearity
+            const staggerY = (r % 2 === 0) ? -45 : 45;
+            const y = hasAdjacentMulti ? centerY : (centerY + staggerY);
+            const node = group[0];
+            node.x = node.fx != null ? node.fx : x;
+            node.y = node.fy != null ? node.fy : y;
             node.targetX = x;
             node.targetY = y;
-        });
+        } else {
+            group.forEach((node, idx) => {
+                const y = centerY + (idx - (group.length - 1) / 2) * nodeSpacingY;
+                node.x = node.fx != null ? node.fx : x;
+                node.y = node.fy != null ? node.fy : y;
+                node.targetX = x;
+                node.targetY = y;
+            });
+        }
     });
 
     // 6. Dynamic Zoom Constraints Calculation
@@ -1069,6 +1116,23 @@ function renderGraphVisualization(graphUploadRequest, graphResponse, preserveEdi
     svg.call(zoom);
     activeD3Zoom = zoom;
     currentSvgSelection = svg;
+
+    // Compute edge multiplicity (for parallel and multi-edges) and pair index
+    const pairGroups = new Map();
+    edges.forEach(e => {
+        const u = typeof e.source === 'object' ? e.source.id : e.source;
+        const v = typeof e.target === 'object' ? e.target.id : e.target;
+        const key = u < v ? `${u}_${v}` : `${v}_${u}`;
+        if (!pairGroups.has(key)) pairGroups.set(key, []);
+        pairGroups.get(key).push(e);
+    });
+
+    pairGroups.forEach(group => {
+        group.forEach((edge, idx) => {
+            edge.pairIndex = idx;
+            edge.pairCount = group.length;
+        });
+    });
 
     // 8. Render Edges (Transparent with White Outline/Arrows)
     const edgeGroups = edgeLayer.selectAll('.edge-group')
@@ -1161,40 +1225,84 @@ function renderGraphVisualization(graphUploadRequest, graphResponse, preserveEdi
             inspectNode(d);
         });
 
-    // 10. Force Simulation with Smooth Settle (Anti-Jank)
+    // 10. Force Simulation with Anti-Collinear Stability & Anti-Overlap Anchoring
     if (activeSimulation) activeSimulation.stop();
 
     activeSimulation = d3.forceSimulation(nodes)
-        .force('link', d3.forceLink(edges).id(d => d.id).distance(180).strength(0.55))
-        .force('charge', d3.forceManyBody().strength(-380))
-        .force('collide', d3.forceCollide().radius(52).iterations(3))
-        .force('x', d3.forceX(d => d.targetX).strength(0.4))
-        .force('y', d3.forceY(d => d.targetY).strength(0.25))
-        .alphaDecay(0.08) // Settles fast in ~0.3s to prevent GPU drag
+        .force('link', d3.forceLink(edges).id(d => d.id).distance(layerSpacingX * 0.95).strength(0.2))
+        .force('charge', d3.forceManyBody().strength(-150))
+        .force('collide', d3.forceCollide().radius(62).iterations(4))
+        .force('x', d3.forceX(d => d.targetX).strength(0.75))
+        .force('y', d3.forceY(d => d.targetY).strength(0.70))
+        .alphaDecay(0.06) // Smooth, stable settle preventing oscillation or snap-back
         .on('tick', () => {
             edgeHitboxes.attr('d', edgePathGenerator);
             edgePaths.attr('d', edgePathGenerator);
             nodeGroups.attr('transform', d => `translate(${d.x},${d.y})`);
         });
 
-    // Pre-warm 50 ticks synchronously for instant clean layout
-    for (let i = 0; i < 50; i++) activeSimulation.tick();
+    // Pre-warm 40 ticks synchronously for instant clean layout
+    for (let i = 0; i < 40; i++) activeSimulation.tick();
 
     // Initial centering and fit
     fitGraphToScreen();
 
     // 11. Helper Generators & Handlers
     function edgePathGenerator(d) {
-        const sx = d.source.x, sy = d.source.y;
-        const tx = d.target.x, ty = d.target.y;
+        const sx = d.source.x != null ? d.source.x : d.source.targetX;
+        const sy = d.source.y != null ? d.source.y : d.source.targetY;
+        const tx = d.target.x != null ? d.target.x : d.target.targetX;
+        const ty = d.target.y != null ? d.target.y : d.target.targetY;
         const dx = tx - sx;
         const dy = ty - sy;
-        const dr = Math.sqrt(dx * dx + dy * dy);
+        const dist = Math.sqrt(dx * dx + dy * dy);
 
-        if (Math.abs(dy) > 25) {
-            return `M${sx},${sy}A${dr * 1.6},${dr * 1.6} 0 0,1 ${tx},${ty}`;
+        // 1. Self Loop
+        if (d.source.id === d.target.id || dist < 2) {
+            return `M ${sx - 10},${sy - 20} C ${sx - 35},${sy - 65} ${sx + 35},${sy - 65} ${sx + 10},${sy - 20}`;
         }
-        return `M${sx},${sy}L${tx},${ty}`;
+
+        const sRank = d.source.rank != null ? d.source.rank : 0;
+        const tRank = d.target.rank != null ? d.target.rank : 0;
+        const rankDiff = tRank - sRank;
+
+        const pairIndex = d.pairIndex != null ? d.pairIndex : 0;
+        const pairCount = d.pairCount != null ? d.pairCount : 1;
+        const midX = (sx + tx) / 2;
+        const midY = (sy + ty) / 2;
+
+        // 2. Reverse / Feedback Edges (Target is behind source or cycle)
+        if (dx < -25 || rankDiff < 0) {
+            const archDrop = Math.max(70, Math.abs(dx) * 0.22) + pairIndex * 26;
+            const cy = Math.max(sy, ty) + archDrop;
+            return `M ${sx},${sy} Q ${midX},${cy} ${tx},${ty}`;
+        }
+
+        // 3. Skip-Rank Forward Edges (Edge hops over 1 or more intermediate columns)
+        if (rankDiff > 1 && dx > 80) {
+            // Arch cleanly above intermediate nodes so it never cuts through them or overlaps intermediate edges
+            const archHeight = 55 + (rankDiff - 1) * 32 + (pairIndex * 24);
+            const cy = Math.min(sy, ty) - archHeight;
+            return `M ${sx},${sy} Q ${midX},${cy} ${tx},${ty}`;
+        }
+
+        // 4. Parallel Edges (Multiple edges between the same pair of nodes)
+        if (pairCount > 1) {
+            const nx = -dy / (dist || 1);
+            const ny = dx / (dist || 1);
+            const spread = (pairIndex - (pairCount - 1) / 2) * 32;
+            const cx = midX + nx * spread;
+            const cy = midY + ny * spread;
+            return `M ${sx},${sy} Q ${cx},${cy} ${tx},${ty}`;
+        }
+
+        // 5. Standard Forward Adjacent Edge: Smooth Horizontal S-Curve
+        const curvature = 0.45;
+        const cx1 = sx + dx * curvature;
+        const cy1 = sy;
+        const cx2 = tx - dx * curvature;
+        const cy2 = ty;
+        return `M ${sx},${sy} C ${cx1},${cy1} ${cx2},${cy2} ${tx},${ty}`;
     }
 
     function dragStarted(event, d) {
@@ -1210,8 +1318,10 @@ function renderGraphVisualization(graphUploadRequest, graphResponse, preserveEdi
 
     function dragEnded(event, d) {
         if (!event.active) activeSimulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
+        d.fx = event.x;
+        d.fy = event.y;
+        d.targetX = event.x;
+        d.targetY = event.y;
     }
 }
 
@@ -1435,6 +1545,17 @@ function fitGraphToScreen() {
         activeD3Zoom.transform,
         d3.zoomIdentity.translate(tx, ty).scale(scale)
     );
+}
+
+function resetGraphLayout() {
+    if (!activeGraphData) return;
+    (activeGraphData.nodes || []).forEach(n => {
+        n.fx = null;
+        n.fy = null;
+    });
+    reconstructGraphUploadRequest();
+    renderGraphVisualization(activeGraphData, { graphId: currentGraphId, graphName: activeGraphData.graphName }, true);
+    showToast("Layout re-aligned", "info");
 }
 
 // ==========================================================================
