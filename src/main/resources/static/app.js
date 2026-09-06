@@ -5,6 +5,42 @@ let userGraphs = [];
 // Base URL for API (served from same origin, so empty base path is fine for relative)
 const API_BASE = '/workflow-engine';
 
+// Correlation ID Generator (27 digits matching backend Schema: yyyyMMddHHmmssSSS + 10 digits sequence)
+function generateCorrelationId() {
+    const now = new Date();
+    const yyyy = now.getFullYear().toString();
+    const MM = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    const HH = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    const ss = String(now.getSeconds()).padStart(2, '0');
+    const SSS = String(now.getMilliseconds()).padStart(3, '0');
+    const timestamp = yyyy + MM + dd + HH + mm + ss + SSS; // 17 digits
+    const randomSeq = String(Math.floor(Math.random() * 10000000000)).padStart(10, '0'); // 10 digits
+    return timestamp + randomSeq; // exactly 27 digits
+}
+
+// Global fetch wrapper to append correlationId to URL query string and request header
+const originalFetch = window.fetch;
+window.fetch = function(url, options = {}) {
+    if (typeof url === 'string' && (url.startsWith('/workflow-engine') || url.includes('/workflow-engine/'))) {
+        const correlationId = generateCorrelationId();
+        const sep = url.includes('?') ? '&' : '?';
+        url = `${url}${sep}correlationId=${correlationId}`;
+
+        options = options || {};
+        options.headers = options.headers || {};
+        if (options.headers instanceof Headers) {
+            options.headers.set('X-Correlation-ID', correlationId);
+        } else {
+            options.headers['X-Correlation-ID'] = correlationId;
+        }
+
+        console.log(`[DAG-API] ${options.method || 'GET'} ${url} | Correlation-ID: ${correlationId}`);
+    }
+    return originalFetch(url, options);
+};
+
 // DOM Elements
 const loginView = document.getElementById('landing-view');
 const dashboardView = document.getElementById('dashboard-view');
@@ -91,6 +127,30 @@ const cancelGraphDetailsBtn = document.getElementById('cancel-graph-details-btn'
 const closeDetailsModalBtn = document.getElementById('close-details-modal-btn');
 const saveGraphDetailsBtn = document.getElementById('save-graph-details-btn');
 
+// Add Cost Parameter Modal DOM Elements
+const addCostModal = document.getElementById('add-cost-parameter-modal');
+const addCostForm = document.getElementById('add-cost-parameter-form');
+const newCostParamName = document.getElementById('new-cost-param-name');
+const newCostParamDefault = document.getElementById('new-cost-param-default');
+const cancelCostModalBtn = document.getElementById('cancel-cost-modal-btn');
+const closeCostModalBtn = document.getElementById('close-cost-modal-btn');
+
+// Path Calculation DOM Elements
+const calcPathsBtn = document.getElementById('calc-paths-btn');
+const spViewTabs = document.getElementById('sp-view-tabs');
+const spTabInspector = document.getElementById('sp-tab-inspector');
+const spTabPaths = document.getElementById('sp-tab-paths');
+const spPathsCountBadge = document.getElementById('sp-paths-count-badge');
+const spInspectorContainer = document.getElementById('sp-inspector-container');
+const spPathsContainer = document.getElementById('sp-paths-container');
+const recalcPathsBtn = document.getElementById('recalc-paths-btn');
+const pathsLoading = document.getElementById('paths-loading');
+const pathsEmptyPrompt = document.getElementById('paths-empty-prompt');
+const pathsPromptCalcBtn = document.getElementById('paths-prompt-calc-btn');
+const pathsCardsList = document.getElementById('paths-cards-list');
+const spPanelTitle = document.getElementById('sp-panel-title');
+const spHeaderIcon = document.getElementById('sp-header-icon');
+
 // Graph Visualization State
 let activeSimulation = null;
 let activeD3Zoom = null;
@@ -107,6 +167,10 @@ let hasMetadataChanges = false;
 let isEdgeAddMode = false;
 let edgeSourceNode = null;
 let globalCostNames = [];
+
+// Path Calculation State
+let cachedPaths = null;
+let activeSidePanelTab = 'inspector';
 
 
 // Initialization
@@ -208,6 +272,39 @@ document.addEventListener('keydown', (e) => {
         closeGraphDetailsModal();
     }
 });
+
+// Add Cost Parameter Triggers & Modal Listeners
+document.querySelectorAll('.add-cost-parameter-trigger').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openAddCostModal();
+    });
+});
+if (cancelCostModalBtn) cancelCostModalBtn.addEventListener('click', closeAddCostModal);
+if (closeCostModalBtn) closeCostModalBtn.addEventListener('click', closeAddCostModal);
+if (addCostForm) addCostForm.addEventListener('submit', handleAddCostSubmit);
+if (addCostModal) {
+    addCostModal.addEventListener('click', (e) => {
+        if (e.target === addCostModal) closeAddCostModal();
+    });
+}
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && addCostModal && !addCostModal.classList.contains('hidden')) {
+        closeAddCostModal();
+    }
+});
+
+// Path Calculation Listeners
+if (calcPathsBtn) calcPathsBtn.addEventListener('click', () => calculateAndRenderPaths());
+if (spTabInspector) spTabInspector.addEventListener('click', () => switchSidePanelTab('inspector'));
+if (spTabPaths) spTabPaths.addEventListener('click', () => {
+    switchSidePanelTab('paths');
+    if (!cachedPaths || cachedPaths.graphId !== currentGraphId) {
+        calculateAndRenderPaths();
+    }
+});
+if (recalcPathsBtn) recalcPathsBtn.addEventListener('click', () => calculateAndRenderPaths(true));
+if (pathsPromptCalcBtn) pathsPromptCalcBtn.addEventListener('click', () => calculateAndRenderPaths(true));
 
 // Utility: Show Toast
 function showToast(message, type = 'success') {
@@ -478,7 +575,7 @@ async function fetchGraphPaths(graphId) {
         const data = await response.json();
         const pathsSpan = document.getElementById(`paths-${graphId}`);
         if (pathsSpan) {
-            pathsSpan.textContent = data.allPaths ? data.allPaths.length : 0;
+            pathsSpan.textContent = data.paths ? data.paths.length : (data.totalPaths || 0);
         }
     } catch (err) {
         console.error(`Failed to fetch paths for graph ${graphId}`, err);
@@ -645,6 +742,18 @@ async function openGraphView(graphId) {
     spEmptyState.classList.remove('hidden');
     spDetails.classList.add('hidden');
     selectedElement = null;
+
+    // Reset Path Calculation State
+    cachedPaths = null;
+    if (spPathsCountBadge) spPathsCountBadge.textContent = '0';
+    if (pathsCardsList) pathsCardsList.innerHTML = '';
+    if (pathsEmptyPrompt) {
+        pathsEmptyPrompt.classList.remove('hidden');
+        const promptP = pathsEmptyPrompt.querySelector('p');
+        if (promptP) promptP.textContent = 'No paths calculated yet.';
+    }
+    if (pathsLoading) pathsLoading.classList.add('hidden');
+    switchSidePanelTab('inspector');
     lucide.createIcons();
 
     try {
@@ -676,6 +785,7 @@ function backToDashboard() {
         activeSimulation.stop();
         activeSimulation = null;
     }
+    clearPathHighlightOnCanvas();
     selectedElement = null;
     graphView.classList.add('hidden');
     graphView.classList.remove('active');
@@ -723,9 +833,14 @@ function renderGraphVisualization(graphUploadRequest, graphResponse, preserveEdi
         spEditSection.classList.remove("hidden");
         spDetails.classList.add("hidden");
         spEmptyState.classList.add("hidden");
+        if (calcPathsBtn) calcPathsBtn.classList.add("hidden");
+        if (spViewTabs) spViewTabs.classList.add("hidden");
+        switchSidePanelTab('inspector');
     } else {
         saveGraphBtn.classList.add("hidden");
         spEditSection.classList.add("hidden");
+        if (calcPathsBtn) calcPathsBtn.classList.remove("hidden");
+        if (spViewTabs) spViewTabs.classList.remove("hidden");
         // In view mode, show cost catalogue card if cost dimensions exist
         if (costNames.length > 0) {
             costCataloguePanel.classList.remove("hidden");
@@ -1134,6 +1249,7 @@ function inspectNode(node) {
         edgeEmptyPrompt.classList.remove('hidden');
         cancelEdgeBtn.classList.add('hidden');
     } else {
+        switchSidePanelTab('inspector');
         spEditSection.classList.add('hidden');
         spDetails.classList.remove('hidden');
 
@@ -1184,6 +1300,7 @@ function inspectEdge(edge) {
         nodeEmptyPrompt.classList.remove('hidden');
         cancelNodeBtn.classList.add('hidden');
     } else {
+        switchSidePanelTab('inspector');
         spEditSection.classList.add('hidden');
         spDetails.classList.remove('hidden');
 
@@ -1327,12 +1444,16 @@ function fitGraphToScreen() {
 function toggleEditMode() {
     isEditMode = editModeToggle.checked;
     exitEdgeAddMode();
+    clearPathHighlightOnCanvas();
     if (isEditMode) {
         saveGraphBtn.classList.remove("hidden");
         costCataloguePanel.classList.remove("hidden");
         spDetails.classList.add("hidden");
         spEmptyState.classList.add("hidden");
         spEditSection.classList.remove("hidden");
+        if (calcPathsBtn) calcPathsBtn.classList.add("hidden");
+        if (spViewTabs) spViewTabs.classList.add("hidden");
+        switchSidePanelTab('inspector');
         if (selectedElement) {
             if (selectedElement.source) inspectEdge(selectedElement);
             else inspectNode(selectedElement);
@@ -1344,6 +1465,8 @@ function toggleEditMode() {
         saveGraphBtn.classList.add("hidden");
         costCataloguePanel.classList.add("hidden");
         spEditSection.classList.add("hidden");
+        if (calcPathsBtn) calcPathsBtn.classList.remove("hidden");
+        if (spViewTabs) spViewTabs.classList.remove("hidden");
         if (selectedElement) {
             if (selectedElement.source) inspectEdge(selectedElement);
             else inspectNode(selectedElement);
@@ -1619,6 +1742,8 @@ async function saveGraphChanges() {
         showToast("Graph updated successfully!");
         hasStructuralChanges = false;
         hasMetadataChanges = false;
+        cachedPaths = null;
+        if (spPathsCountBadge) spPathsCountBadge.textContent = '0';
         
         // Re-render with new data
         if (data.objGraphUploadRequest) {
@@ -1727,5 +1852,387 @@ async function handleSaveGraphDetails(e) {
         saveGraphDetailsBtn.innerHTML = ogHtml;
         lucide.createIcons();
     }
+}
+
+// Add Cost Parameter Modal Handlers
+function openAddCostModal() {
+    if (!addCostModal) return;
+    newCostParamName.value = '';
+    newCostParamDefault.value = '0';
+    addCostModal.classList.remove('hidden');
+    lucide.createIcons();
+    setTimeout(() => {
+        newCostParamName.focus();
+    }, 50);
+}
+
+function closeAddCostModal() {
+    if (!addCostModal) return;
+    addCostModal.classList.add('hidden');
+}
+
+function handleAddCostSubmit(e) {
+    if (e) e.preventDefault();
+    const name = newCostParamName.value.trim();
+    const defaultVal = parseFloat(newCostParamDefault.value) || 0;
+
+    if (!name) {
+        showToast("Parameter name cannot be empty.", "error");
+        newCostParamName.focus();
+        return;
+    }
+
+    if (globalCostNames && globalCostNames.some(c => c.toLowerCase() === name.toLowerCase())) {
+        showToast(`Cost parameter "${name}" already exists.`, "error");
+        newCostParamName.focus();
+        return;
+    }
+
+    // Add to global dimensions
+    if (!globalCostNames) globalCostNames = [];
+    globalCostNames.push(name);
+
+    // Initialize across all active nodes
+    if (activeGraphData && activeGraphData.nodes) {
+        activeGraphData.nodes.forEach(n => {
+            n.cost = n.cost || {};
+            if (n.cost[name] === undefined) {
+                n.cost[name] = defaultVal;
+            }
+        });
+    }
+
+    // Initialize across all active edges
+    if (activeGraphData && activeGraphData.edges) {
+        activeGraphData.edges.forEach(ed => {
+            ed.cost = ed.cost || {};
+            if (ed.cost[name] === undefined) {
+                ed.cost[name] = defaultVal;
+            }
+        });
+    }
+
+    hasStructuralChanges = true;
+
+    // Refresh UI displays
+    renderGlobalCostCatalogue();
+    if (costCataloguePanel) {
+        costCataloguePanel.classList.remove('hidden');
+        costCataloguePanel.classList.remove('collapsed');
+    }
+
+    if (gvCostDimensions && gvCostPill) {
+        gvCostDimensions.textContent = `${globalCostNames.length} Parameter${globalCostNames.length > 1 ? 's' : ''}`;
+        gvCostPill.classList.remove('hidden');
+    }
+
+    // Update inspector if element is selected
+    if (selectedElement) {
+        if (selectedElement.source) {
+            inspectEdge(selectedElement);
+        } else {
+            inspectNode(selectedElement);
+        }
+    }
+
+    closeAddCostModal();
+    showToast(`Added cost parameter "${name}"! Click "Save Changes" to persist.`);
+}
+
+// ==========================================================================
+// Path Calculation & Presentation Engine
+// ==========================================================================
+
+function switchSidePanelTab(tabName) {
+    activeSidePanelTab = tabName;
+    if (tabName === 'paths') {
+        if (spTabPaths) spTabPaths.classList.add('active');
+        if (spTabInspector) spTabInspector.classList.remove('active');
+        if (spPathsContainer) spPathsContainer.classList.remove('hidden');
+        if (spInspectorContainer) spInspectorContainer.classList.add('hidden');
+        if (spPanelTitle) spPanelTitle.textContent = 'Paths';
+        if (spHeaderIcon) spHeaderIcon.setAttribute('data-lucide', 'route');
+    } else {
+        if (spTabInspector) spTabInspector.classList.add('active');
+        if (spTabPaths) spTabPaths.classList.remove('active');
+        if (spInspectorContainer) spInspectorContainer.classList.remove('hidden');
+        if (spPathsContainer) spPathsContainer.classList.add('hidden');
+        if (spPanelTitle) spPanelTitle.textContent = isEditMode ? 'Graph Editor' : 'Inspector';
+        if (spHeaderIcon) spHeaderIcon.setAttribute('data-lucide', isEditMode ? 'edit-3' : 'info');
+    }
+    lucide.createIcons();
+}
+
+function findConnectingEdge(fromId, toId) {
+    if (!activeGraphData || !activeGraphData.edges) return null;
+    return activeGraphData.edges.find(e => {
+        const s = (typeof e.source === 'object' && e.source !== null) ? e.source.id : (e.sourceNodeId !== undefined ? e.sourceNodeId : e.source);
+        const t = (typeof e.target === 'object' && e.target !== null) ? e.target.id : (e.targetNodeId !== undefined ? e.targetNodeId : e.target);
+        return Number(s) === Number(fromId) && Number(t) === Number(toId);
+    });
+}
+
+async function calculateAndRenderPaths(forceRefresh = false) {
+    if (!currentGraphId) {
+        showToast('No active graph selected', 'error');
+        return;
+    }
+
+    openSidePanel();
+    switchSidePanelTab('paths');
+
+    if (!forceRefresh && cachedPaths && cachedPaths.graphId === currentGraphId) {
+        renderPathsCards(cachedPaths.paths);
+        return;
+    }
+
+    if (pathsLoading) pathsLoading.classList.remove('hidden');
+    if (pathsEmptyPrompt) pathsEmptyPrompt.classList.add('hidden');
+    if (pathsCardsList) pathsCardsList.innerHTML = '';
+    lucide.createIcons();
+
+    try {
+        const response = await fetch(`${API_BASE}/graphs/${currentGraphId}/paths`);
+        const data = await response.json();
+
+        if (data.objErrorDetails && data.objErrorDetails.errorCode !== '0' && data.objErrorDetails.errorCode !== '200') {
+            throw new Error(data.objErrorDetails.errorMessage || 'Failed to calculate paths');
+        }
+
+        const paths = data.paths || [];
+        cachedPaths = {
+            graphId: currentGraphId,
+            paths: paths
+        };
+
+        if (spPathsCountBadge) {
+            spPathsCountBadge.textContent = paths.length;
+        }
+
+        renderPathsCards(paths);
+        if (paths.length > 0) {
+            showToast(`Calculated ${paths.length} path${paths.length > 1 ? 's' : ''}!`);
+        }
+    } catch (err) {
+        console.error('Failed to calculate paths:', err);
+        showToast(err.message || 'Error calculating paths', 'error');
+        if (pathsLoading) pathsLoading.classList.add('hidden');
+        if (pathsEmptyPrompt) {
+            pathsEmptyPrompt.classList.remove('hidden');
+            const promptP = pathsEmptyPrompt.querySelector('p');
+            if (promptP) promptP.textContent = 'Error calculating paths: ' + (err.message || 'Unknown error');
+        }
+    } finally {
+        if (pathsLoading) pathsLoading.classList.add('hidden');
+        lucide.createIcons();
+    }
+}
+
+function renderPathsCards(paths) {
+    if (!pathsCardsList) return;
+    pathsCardsList.innerHTML = '';
+
+    if (!paths || paths.length === 0) {
+        if (pathsEmptyPrompt) {
+            pathsEmptyPrompt.classList.remove('hidden');
+            const promptP = pathsEmptyPrompt.querySelector('p');
+            if (promptP) promptP.textContent = 'No reachable paths found for this graph.';
+        }
+        return;
+    }
+
+    if (pathsEmptyPrompt) pathsEmptyPrompt.classList.add('hidden');
+
+    paths.forEach((pathItem, index) => {
+        const nodeSeq = pathItem.nodeSequence || [];
+        const pathCosts = pathItem.pathCosts || {};
+        const costEntries = Object.entries(pathCosts);
+
+        // Header cost summary chips
+        let costSummaryHtml = '';
+        if (costEntries.length === 0) {
+            costSummaryHtml = '<span class="path-cost-badge">No cost data</span>';
+        } else {
+            costSummaryHtml = costEntries.map(([k, v]) => `
+                <span class="path-cost-badge">
+                    <strong>${escapeHtml(k)}:</strong> ${v}
+                </span>
+            `).join('');
+        }
+
+        // Expanded detail cost grid
+        let costDetailsHtml = '';
+        if (costEntries.length === 0) {
+            costDetailsHtml = '<span class="text-sm text-gray-400">No cumulative costs recorded.</span>';
+        } else {
+            costDetailsHtml = costEntries.map(([k, v]) => `
+                <div class="path-cost-item">
+                    <span class="cost-name">${escapeHtml(k)}</span>
+                    <span class="cost-val">${v}</span>
+                </div>
+            `).join('');
+        }
+
+        // Sequential Route: alternating Node and Edge
+        let routeFlowHtml = '';
+        const connectingEdgeIds = [];
+        const pathNodeIds = nodeSeq.map(n => n.id);
+
+        nodeSeq.forEach((node, i) => {
+            const isStart = (i === 0);
+            const isEnd = (i === nodeSeq.length - 1);
+            const dotClass = isStart ? 'start' : (isEnd ? 'end' : '');
+            const badgeText = isStart ? 'START' : (isEnd ? 'END' : `HOP ${i + 1}`);
+
+            routeFlowHtml += `
+                <div class="flow-node-row">
+                    <div class="flow-node-indicator">
+                        <div class="flow-dot ${dotClass}"></div>
+                    </div>
+                    <div class="flow-node-info">
+                        <div class="flow-node-header">
+                            <span class="flow-node-title">${escapeHtml(node.name || ('Node ' + node.id))}</span>
+                            <span class="flow-node-badge ${dotClass}">${badgeText}</span>
+                        </div>
+                        <span class="flow-node-id">ID: ${node.id}${node.description ? ' • ' + escapeHtml(node.description) : ''}</span>
+                    </div>
+                </div>
+            `;
+
+            if (i < nodeSeq.length - 1) {
+                const nextNode = nodeSeq[i + 1];
+                const edge = findConnectingEdge(node.id, nextNode.id);
+                const edgeName = edge ? (edge.name || ('Edge ' + edge.id)) : `Edge (${node.id} → ${nextNode.id})`;
+                const edgeId = edge ? edge.id : null;
+                if (edgeId != null) connectingEdgeIds.push(edgeId);
+
+                routeFlowHtml += `
+                    <div class="flow-edge-row">
+                        <div class="flow-edge-line">
+                            <i data-lucide="arrow-down" class="flow-arrow-icon"></i>
+                        </div>
+                        <div class="flow-edge-info">
+                            <i data-lucide="move-down-right" class="flow-edge-icon"></i>
+                            <span class="flow-edge-title">${escapeHtml(edgeName)}</span>
+                            ${edgeId ? `<span class="flow-edge-id">ID: ${edgeId}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            }
+        });
+
+        const card = document.createElement('div');
+        card.className = 'path-card';
+        card.dataset.pathIdx = index;
+        card.innerHTML = `
+            <div class="path-card-header" title="Click to expand/collapse path details">
+                <div class="path-header-info">
+                    <div class="path-title-wrap">
+                        <i data-lucide="git-commit"></i>
+                        <span class="path-name">Path ${index + 1}</span>
+                        <span class="path-hops-count">${nodeSeq.length} Nodes</span>
+                    </div>
+                    <div class="path-costs-summary">
+                        ${costSummaryHtml}
+                    </div>
+                </div>
+                <div class="path-chevron-wrap">
+                    <i data-lucide="chevron-down" class="path-chevron"></i>
+                </div>
+            </div>
+            <div class="path-card-body">
+                <div class="path-route-flow">
+                    ${routeFlowHtml}
+                </div>
+                <div class="path-costs-detail-section">
+                    <span class="path-detail-label">Cumulative Path Costs</span>
+                    <div class="path-costs-grid">
+                        ${costDetailsHtml}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Click to expand / collapse (independent expansion for multiple cards)
+        const header = card.querySelector('.path-card-header');
+        header.addEventListener('click', () => {
+            const isExpanded = card.classList.toggle('expanded');
+            if (isExpanded) {
+                highlightPathOnCanvas(pathNodeIds, connectingEdgeIds);
+            } else {
+                clearPathHighlightOnCanvas();
+            }
+        });
+
+        // Hover to highlight on canvas
+        card.addEventListener('mouseenter', () => {
+            highlightPathOnCanvas(pathNodeIds, connectingEdgeIds);
+        });
+
+        card.addEventListener('mouseleave', () => {
+            const anyExpanded = document.querySelector('.path-card.expanded');
+            if (!anyExpanded) {
+                clearPathHighlightOnCanvas();
+            } else {
+                // If another card is expanded, highlight that one
+                const expIdx = anyExpanded.dataset.pathIdx;
+                if (paths[expIdx]) {
+                    const expNodeIds = (paths[expIdx].nodeSequence || []).map(n => n.id);
+                    const expEdgeIds = [];
+                    for (let j = 0; j < expNodeIds.length - 1; j++) {
+                        const ed = findConnectingEdge(expNodeIds[j], expNodeIds[j + 1]);
+                        if (ed && ed.id != null) expEdgeIds.push(ed.id);
+                    }
+                    highlightPathOnCanvas(expNodeIds, expEdgeIds);
+                }
+            }
+        });
+
+        pathsCardsList.appendChild(card);
+    });
+
+    lucide.createIcons();
+}
+
+function highlightPathOnCanvas(nodeIds, edgeIds) {
+    if (!currentSvgSelection) return;
+    const nodeIdSet = new Set(nodeIds.map(Number));
+    const edgeIdSet = new Set(edgeIds.map(Number));
+
+    // Dim all elements first
+    d3.selectAll('.node-group').classed('path-dimmed', true).classed('path-active-node', false);
+    d3.selectAll('.edge-group').classed('path-dimmed', true).classed('path-active-edge', false);
+
+    // Highlight path nodes
+    d3.selectAll('.node-group').filter(d => nodeIdSet.has(Number(d.id)))
+        .classed('path-dimmed', false)
+        .classed('path-active-node', true);
+
+    // Highlight path edges
+    d3.selectAll('.edge-group').filter(d => {
+        if (d.id != null && edgeIdSet.has(Number(d.id))) return true;
+        const s = Number(d.source.id != null ? d.source.id : d.source);
+        const t = Number(d.target.id != null ? d.target.id : d.target);
+        for (let i = 0; i < nodeIds.length - 1; i++) {
+            if (Number(nodeIds[i]) === s && Number(nodeIds[i + 1]) === t) return true;
+        }
+        return false;
+    }).classed('path-dimmed', false).classed('path-active-edge', true);
+}
+
+function clearPathHighlightOnCanvas() {
+    if (!currentSvgSelection) return;
+    d3.selectAll('.node-group').classed('path-dimmed', false).classed('path-active-node', false);
+    d3.selectAll('.edge-group').classed('path-dimmed', false).classed('path-active-edge', false);
+}
+
+function escapeHtml(str) {
+    if (str == null) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }
 

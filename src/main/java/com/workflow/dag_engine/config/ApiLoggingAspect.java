@@ -48,16 +48,32 @@ public class ApiLoggingAspect {
 
     @Around("controllerMethods()")
     public Object logApiCall(ProceedingJoinPoint joinPoint) throws Throwable {
-        String correlationId = CorrelationIdGenerator.generateCorrelationId();
-        LocalDateTime startTime = LocalDateTime.now();
-        long startMs = System.currentTimeMillis();
-
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes != null ? attributes.getRequest() : null;
         HttpServletResponse response = attributes != null ? attributes.getResponse() : null;
 
+        String correlationId = null;
+        if (request != null) {
+            correlationId = request.getHeader("X-Correlation-ID");
+            if (correlationId == null || correlationId.trim().isEmpty()) {
+                correlationId = request.getParameter("correlationId");
+            }
+        }
+        if (correlationId == null || correlationId.trim().isEmpty()) {
+            correlationId = CorrelationIdGenerator.generateCorrelationId();
+        } else {
+            correlationId = correlationId.trim();
+            if (correlationId.length() > 27) {
+                correlationId = correlationId.substring(0, 27);
+            }
+        }
+
+        LocalDateTime startTime = LocalDateTime.now();
+        long startMs = System.currentTimeMillis();
+
         if (response != null) {
             response.setHeader("X-Correlation-ID", correlationId);
+            response.setHeader("Access-Control-Expose-Headers", "X-Correlation-ID");
         }
 
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();

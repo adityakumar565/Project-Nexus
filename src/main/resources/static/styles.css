@@ -192,6 +192,44 @@ body {
     border-radius: 50%;
 }
 
+.glass-btn.btn-sm {
+    padding: 0.45rem 0.9rem;
+    font-size: 0.85rem;
+}
+
+.glass-btn.btn-xs {
+    padding: 0.25rem 0.6rem;
+    font-size: 0.75rem;
+    border-radius: 6px;
+    gap: 0.25rem;
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: var(--transition);
+    padding: 0;
+}
+
+.btn-link:hover {
+    color: #60a5fa;
+    text-decoration: underline;
+}
+
+.sp-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.35rem;
+}
+
 /* Landing Page */
 #landing-view {
     min-height: 100vh;
@@ -1619,4 +1657,328 @@ body {
     padding-top: 1rem;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
+
+/* ==========================================================================
+   Path Calculation & Side Panel Tabs Styles
+   ========================================================================== */
+.calc-paths-float-btn {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    z-index: 25;
+    padding: 0.75rem 1.4rem;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4), 0 0 15px rgba(59, 130, 246, 0.2);
+    transition: var(--transition);
+}
+
+.calc-paths-float-btn:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 14px 30px -5px rgba(59, 130, 246, 0.5), 0 0 20px rgba(59, 130, 246, 0.3);
+}
+
+.calc-paths-float-btn i, .calc-paths-float-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.sp-tab-bar {
+    display: flex;
+    background: rgba(0, 0, 0, 0.25);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 0.35rem 0.75rem;
+    gap: 0.5rem;
+}
+
+.sp-tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.75rem;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.sp-tab-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.sp-tab-btn.active {
+    color: #ffffff;
+    background: rgba(59, 130, 246, 0.25);
+    border-color: rgba(59, 130, 246, 0.4);
+}
+
+.sp-tab-btn i, .sp-tab-btn svg {
+    width: 15px;
+    height: 15px;
+}
+
+.badge-sm {
+    font-size: 0.7rem;
+    padding: 0.1rem 0.45rem;
+}
+
+.paths-header-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.paths-summary-label {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.paths-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 0;
+    gap: 0.75rem;
+    color: var(--primary);
+    font-size: 0.9rem;
+}
+
+.paths-empty-prompt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 1rem;
+    text-align: center;
+    color: var(--text-secondary);
+    gap: 0.5rem;
+}
+
+.paths-empty-prompt i, .paths-empty-prompt svg {
+    width: 36px;
+    height: 36px;
+    opacity: 0.5;
+}
+
+.paths-cards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.path-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.path-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.path-card.expanded {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: rgba(59, 130, 246, 0.4);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.path-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0.9rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.path-header-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.path-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #ffffff;
+}
+
+.path-hops-badge {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.07);
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+}
+
+.path-header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.path-costs-summary {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.path-cost-chip {
+    font-size: 0.75rem;
+    color: #60a5fa;
+    background: rgba(59, 130, 246, 0.12);
+    border: 1px solid rgba(59, 130, 246, 0.25);
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+    font-weight: 500;
+}
+
+.path-chevron {
+    width: 16px;
+    height: 16px;
+    color: var(--text-secondary);
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+}
+
+.path-card.expanded .path-chevron {
+    transform: rotate(180deg);
+    color: var(--primary);
+}
+
+.path-card-body {
+    display: none;
+    padding: 0.85rem 0.9rem 1rem 0.9rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(0, 0, 0, 0.15);
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.path-card.expanded .path-card-body {
+    display: flex;
+}
+
+.path-route-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.flow-node-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 6px;
+    padding: 0.4rem 0.65rem;
+}
+
+.flow-node-icon {
+    width: 16px;
+    height: 16px;
+    color: #60a5fa;
+    flex-shrink: 0;
+}
+
+.flow-node-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #f8fafc;
+}
+
+.flow-edge-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.2rem 1.25rem;
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+}
+
+.flow-edge-icon {
+    width: 14px;
+    height: 14px;
+    color: #a78bfa;
+    flex-shrink: 0;
+}
+
+.flow-edge-name {
+    font-weight: 500;
+    color: #c4b5fd;
+    background: rgba(139, 92, 246, 0.12);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    padding: 0.1rem 0.45rem;
+    border-radius: 4px;
+}
+
+.path-costs-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-top: 0.25rem;
+}
+
+.path-cost-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 0.35rem 0.6rem;
+    border-radius: 4px;
+}
+
+.path-cost-name {
+    color: var(--text-secondary);
+    text-transform: capitalize;
+}
+
+.path-cost-val {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* Canvas Highlight Classes */
+.path-active-node .node-circle {
+    stroke: #60a5fa !important;
+    stroke-width: 3.5px !important;
+    filter: drop-shadow(0 0 10px #3b82f6) !important;
+}
+
+.path-active-node .node-halo {
+    stroke: rgba(59, 130, 246, 0.6) !important;
+    fill: rgba(59, 130, 246, 0.3) !important;
+}
+
+.path-active-edge .edge-path {
+    stroke: #a78bfa !important;
+    stroke-width: 3.5px !important;
+    filter: drop-shadow(0 0 8px #8b5cf6) !important;
+}
+
+.path-dimmed {
+    opacity: 0.18 !important;
+    transition: opacity 0.25s ease;
+}
+
 

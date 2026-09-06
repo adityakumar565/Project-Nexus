@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="styles.css">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="app.js?v=7" defer></script>
+    <script src="app.js?v=9" defer></script>
 </head>
 <body>
     <!-- Dynamic Background -->
@@ -188,8 +188,8 @@
                             <span class="badge" id="cost-catalogue-count">0</span>
                         </div>
                         <div class="cost-header-actions">
-                            <button class="icon-tool-btn hidden" id="add-cost-dim-btn" title="Add Cost Parameter" type="button">
-                                <i data-lucide="plus"></i>
+                            <button class="glass-btn btn-xs primary add-cost-parameter-trigger" id="add-cost-dim-btn" title="Add Cost Parameter" type="button">
+                                <i data-lucide="plus"></i> Add
                             </button>
                             <button class="icon-tool-btn" id="toggle-cost-catalogue-btn" title="Expand/Collapse" type="button">
                                 <i data-lucide="chevron-down" id="cost-catalogue-chevron"></i>
@@ -199,13 +199,22 @@
                     <div class="cost-list" id="global-cost-list">
                         <!-- Cost items populated here vertically -->
                     </div>
+                    <button class="glass-btn btn-sm w-full mt-2 add-cost-parameter-trigger" id="add-cost-dim-bottom-btn" type="button">
+                        <i data-lucide="plus"></i> Add Cost Parameter
+                    </button>
                 </div>
+
+                <!-- Floating Calculate Paths Button (Bottom Left, View Mode Only) -->
+                <button id="calc-paths-btn" class="glass-btn primary calc-paths-float-btn" title="Calculate all paths" type="button">
+                    <i data-lucide="route"></i>
+                    <span>Calculate Paths</span>
+                </button>
 
                 <!-- Collapsible Right Data Panel (Inspector Side Menu) -->
                 <aside id="graph-side-panel" class="graph-side-panel">
                     <div class="side-panel-header">
                         <div class="side-panel-title-wrap">
-                            <i data-lucide="info"></i>
+                            <i data-lucide="info" id="sp-header-icon"></i>
                             <h3 id="sp-panel-title">Inspector</h3>
                         </div>
                         <button class="icon-tool-btn" id="close-side-panel-btn" title="Close Panel">
@@ -213,33 +222,73 @@
                         </button>
                     </div>
 
+                    <!-- View Mode Tab Switcher (Inspector vs Paths) -->
+                    <div class="sp-tab-bar" id="sp-view-tabs">
+                        <button type="button" class="sp-tab-btn active" id="sp-tab-inspector">
+                            <i data-lucide="eye"></i> <span>Inspector</span>
+                        </button>
+                        <button type="button" class="sp-tab-btn" id="sp-tab-paths">
+                            <i data-lucide="route"></i> <span>Paths</span> <span class="badge badge-sm" id="sp-paths-count-badge">0</span>
+                        </button>
+                    </div>
+
                     <div class="side-panel-content" id="sp-content">
-                        <!-- Placeholder / Prompt State -->
-                        <div id="sp-empty-state" class="sp-empty">
-                            <i data-lucide="mouse-pointer-click"></i>
-                            <p>Select or hover over any node or edge to inspect its attributes, costs, and connections.</p>
+                        <!-- Tab 1: Inspector Container -->
+                        <div id="sp-inspector-container">
+                            <!-- Placeholder / Prompt State -->
+                            <div id="sp-empty-state" class="sp-empty">
+                                <i data-lucide="mouse-pointer-click"></i>
+                                <p>Select or hover over any node or edge to inspect its attributes, costs, and connections.</p>
+                            </div>
+
+                            <!-- View Mode Details Section -->
+                            <div id="sp-details" class="sp-details hidden">
+                                <div class="sp-badge-row">
+                                    <span class="sp-badge" id="sp-type-badge">NODE</span>
+                                    <span class="sp-id-badge" id="sp-id-badge">ID: 1</span>
+                                </div>
+                                <h4 class="sp-name" id="sp-name">Home</h4>
+                                <div class="sp-section">
+                                    <label class="sp-label">Description</label>
+                                    <p class="sp-desc" id="sp-desc">Starting location</p>
+                                </div>
+                                <div class="sp-section" id="sp-connection-section">
+                                    <label class="sp-label">Connection</label>
+                                    <p class="sp-text" id="sp-connection-text">-</p>
+                                </div>
+                                <div class="sp-section">
+                                    <label class="sp-label">Cost Breakdown</label>
+                                    <div class="sp-cost-list" id="sp-cost-list">
+                                        <!-- Populated dynamically -->
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- View Mode Details Section -->
-                        <div id="sp-details" class="sp-details hidden">
-                            <div class="sp-badge-row">
-                                <span class="sp-badge" id="sp-type-badge">NODE</span>
-                                <span class="sp-id-badge" id="sp-id-badge">ID: 1</span>
+                        <!-- Tab 2: Paths Container -->
+                        <div id="sp-paths-container" class="hidden">
+                            <div class="paths-header-summary">
+                                <span class="paths-summary-label">Computed DAG Routes</span>
+                                <button class="glass-btn btn-xs" id="recalc-paths-btn" title="Recalculate Paths" type="button">
+                                    <i data-lucide="refresh-cw"></i> Recalculate
+                                </button>
                             </div>
-                            <h4 class="sp-name" id="sp-name">Home</h4>
-                            <div class="sp-section">
-                                <label class="sp-label">Description</label>
-                                <p class="sp-desc" id="sp-desc">Starting location</p>
+
+                            <div id="paths-loading" class="paths-loading hidden">
+                                <i data-lucide="loader-2" class="spin"></i>
+                                <span>Calculating paths...</span>
                             </div>
-                            <div class="sp-section" id="sp-connection-section">
-                                <label class="sp-label">Connection</label>
-                                <p class="sp-text" id="sp-connection-text">-</p>
+
+                            <div id="paths-empty-prompt" class="paths-empty-prompt">
+                                <i data-lucide="route"></i>
+                                <p>No paths calculated yet.</p>
+                                <button class="glass-btn primary btn-sm mt-2" id="paths-prompt-calc-btn" type="button">
+                                    <i data-lucide="route"></i> Calculate Paths
+                                </button>
                             </div>
-                            <div class="sp-section">
-                                <label class="sp-label">Cost Breakdown</label>
-                                <div class="sp-cost-list" id="sp-cost-list">
-                                    <!-- Populated dynamically -->
-                                </div>
+
+                            <div id="paths-cards-list" class="paths-cards-list">
+                                <!-- Path cards injected here dynamically -->
                             </div>
                         </div>
 
@@ -281,10 +330,18 @@
                                         <textarea id="edit-node-desc" class="glass-input-sm" rows="2" placeholder="Node Description"></textarea>
                                     </div>
                                     <div class="sp-section mt-2">
-                                        <label class="sp-label">Costs</label>
+                                        <div class="sp-section-header">
+                                            <label class="sp-label">Costs</label>
+                                            <button type="button" class="btn-link add-cost-parameter-trigger" title="Add New Cost Parameter">
+                                                <i data-lucide="plus-circle"></i> Add Cost
+                                            </button>
+                                        </div>
                                         <div id="edit-node-costs" class="edit-cost-grid">
                                             <!-- Cost inputs populated here -->
                                         </div>
+                                        <button type="button" class="glass-btn btn-sm w-full mt-2 add-cost-parameter-trigger" id="add-node-cost-param-btn">
+                                            <i data-lucide="plus"></i> Add Cost Parameter
+                                        </button>
                                     </div>
                                     <button class="glass-btn danger btn-sm w-full mt-3" id="delete-node-btn">
                                         <i data-lucide="trash-2"></i> Delete Node
@@ -337,10 +394,18 @@
                                         <textarea id="edit-edge-desc" class="glass-input-sm" rows="2" placeholder="Edge Description"></textarea>
                                     </div>
                                     <div class="sp-section mt-2">
-                                        <label class="sp-label">Costs</label>
+                                        <div class="sp-section-header">
+                                            <label class="sp-label">Costs</label>
+                                            <button type="button" class="btn-link add-cost-parameter-trigger" title="Add New Cost Parameter">
+                                                <i data-lucide="plus-circle"></i> Add Cost
+                                            </button>
+                                        </div>
                                         <div id="edit-edge-costs" class="edit-cost-grid">
                                             <!-- Cost inputs populated here -->
                                         </div>
+                                        <button type="button" class="glass-btn btn-sm w-full mt-2 add-cost-parameter-trigger" id="add-edge-cost-param-btn">
+                                            <i data-lucide="plus"></i> Add Cost Parameter
+                                        </button>
                                     </div>
                                     <button class="glass-btn danger btn-sm w-full mt-3" id="delete-edge-btn">
                                         <i data-lucide="trash-2"></i> Delete Edge
@@ -389,6 +454,37 @@
                     <button type="button" class="glass-btn" id="cancel-graph-details-btn">Cancel</button>
                     <button type="submit" class="glass-btn primary" id="save-graph-details-btn">
                         <i data-lucide="save"></i> Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Cost Parameter Modal -->
+    <div id="add-cost-parameter-modal" class="modal-backdrop hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title-wrap">
+                    <i data-lucide="layers"></i>
+                    <h3>Add Cost Parameter</h3>
+                </div>
+                <button class="glass-btn icon-btn modal-close-btn" id="close-cost-modal-btn" type="button" title="Close">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form id="add-cost-parameter-form" class="modal-body">
+                <div class="modal-input-group">
+                    <label for="new-cost-param-name">Parameter Name <span class="required">*</span></label>
+                    <input type="text" id="new-cost-param-name" class="glass-input" placeholder="e.g. latency, cpu, memory, bandwidth" required autocomplete="off">
+                </div>
+                <div class="modal-input-group">
+                    <label for="new-cost-param-default">Default Value for All Nodes/Edges</label>
+                    <input type="number" step="any" id="new-cost-param-default" class="glass-input" value="0" placeholder="0">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="glass-btn" id="cancel-cost-modal-btn">Cancel</button>
+                    <button type="submit" class="glass-btn primary" id="save-cost-param-btn">
+                        <i data-lucide="plus"></i> Add Parameter
                     </button>
                 </div>
             </form>
