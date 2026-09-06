@@ -52,7 +52,10 @@ public class UserImpl implements UserInterface {
                     throw new ApplicationException("11", "User Password Cannot be Empty");
                 }
 
-                userServices.createUser(userEntity);
+                UserEntity createdUser = userServices.createUser(userEntity);
+                if (createdUser != null) {
+                    userRequest.setUserId(createdUser.getUserId());
+                }
 
             }
 
@@ -153,6 +156,7 @@ public class UserImpl implements UserInterface {
                 }
 
                 userEntity.setUserId(userId);
+                userRequest.setUserId(userId);
             }
 
         } catch (ApplicationException e) {

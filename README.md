@@ -70,10 +70,10 @@ The engine provides a complete CRUD and lifecycle REST API for users and graphs.
 
 ### 2. Graph Management & Lifecycle
 - `POST /workflow-engine/graphs/upload`: Uploads the DAG JSON. The system bakes the topology into a primitive structure, writes it to disk as a `.bin`, and saves metadata to PostgreSQL.
-- `POST /workflow-engine/graphs/get`: Loads the graph into active memory (or hits the cache) and returns the full JSON representation back to the client for canvas rendering.
+<!-- - `POST /workflow-engine/graphs/get`: Loads the graph into active memory (or hits the cache) and returns the full JSON representation back to the client for canvas rendering. -->
 - `POST /workflow-engine/graphs/close`: Unloads the active graph from memory, deregistering it from the `GraphComponentManager` and allowing GC to reclaim primitive arrays.
 - `POST /workflow-engine/graphs/delete`: Safely deletes the graph's `.bin` file and database record.
-  > **Note**: This will return an error (Code `2005`) if the graph is currently active in memory.
+  <!-- > **Note**: This will return an error (Code `2005`) if the graph is currently active in memory. -->
 
 ## How to Run
 

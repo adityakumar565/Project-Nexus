@@ -1,6 +1,7 @@
 package com.workflow.dag_engine.componentManager.paths.interfaces.kernels;
 
 import java.util.List;
+import java.util.Map;
 import com.workflow.dag_engine.interfaces.componentManager.GraphComponentManagerInterface;
 import com.workflow.dag_engine.models.path.PathDTO;
 
@@ -34,6 +35,15 @@ public interface PathBridgeInterface {
     List<PathDTO> sync(List<String> costNames);
 
     /**
+     * Reads all paths from the internal populated storage and parses them into PathDTO structures with node names.
+     * 
+     * @param costNames The ordered list of cost dimension names from the Graph.
+     * @param nodeNames Map of node ID to node name.
+     * @return A list of PathDTOs representing all valid traversal paths.
+     */
+    List<PathDTO> sync(List<String> costNames, Map<Integer, String> nodeNames);
+
+    /**
      * Converts a specific raw path sequence and its corresponding costs into a PathDTO.
      * 
      * @param rawPathSequence The array of graph node IDs for the path.
@@ -42,6 +52,17 @@ public interface PathBridgeInterface {
      * @return The constructed PathDTO.
      */
     PathDTO syncPath(int[] rawPathSequence, float[] rawCosts, List<String> costNames);
+
+    /**
+     * Converts a specific raw path sequence and its corresponding costs into a PathDTO with node names.
+     * 
+     * @param rawPathSequence The array of graph node IDs for the path.
+     * @param rawCosts The cost array mapped by dimension.
+     * @param costNames The ordered list of cost dimension names.
+     * @param nodeNames Map of node ID to node name.
+     * @return The constructed PathDTO.
+     */
+    PathDTO syncPath(int[] rawPathSequence, float[] rawCosts, List<String> costNames, Map<Integer, String> nodeNames);
 
     /**
      * Saves the provided storage to a binary file and returns the file path.

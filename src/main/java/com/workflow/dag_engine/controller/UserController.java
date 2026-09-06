@@ -56,7 +56,7 @@ public class UserController {
     }
 
     @Operation(summary = "Fetch user graphs", description = "Retrieves a list of all graph metadata belonging to the specified user")
-    @PostMapping("/graphs")
+    @PostMapping({"/get", "/graphs"})
     public UserGraphResponse getUserGraph(@RequestBody UserRequest userRequest) throws Exception {
 
         log.info("REST request to fetch user graphs for: {}", userRequest);

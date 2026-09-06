@@ -113,6 +113,13 @@ public class GraphComponentManagerImpl implements GraphComponentManagerInterface
     }
 
     @Override
+    public void updateMetaData(java.util.List<String> costNames) {
+        if (activeStorage != null) {
+            activeStorage.setCostNames(costNames);
+        }
+    }
+
+    @Override
     public boolean containsNode(int nodeId) {
         return activeStorage != null && activeStorage.containsNode(nodeId);
     }

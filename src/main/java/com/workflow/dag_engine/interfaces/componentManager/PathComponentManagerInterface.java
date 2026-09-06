@@ -2,6 +2,7 @@ package com.workflow.dag_engine.interfaces.componentManager;
 
 import com.workflow.dag_engine.models.path.PathDTO;
 import java.util.List;
+import java.util.Map;
 
 public interface PathComponentManagerInterface {
 
@@ -10,6 +11,13 @@ public interface PathComponentManagerInterface {
      * @return A list of PathDTO objects containing node sequences and their associated costs.
      */
     List<PathDTO> getAllPaths();
+
+    /**
+     * Retrieves all valid paths in the graph, with nodes containing IDs and names.
+     * @param nodeNames Map of node ID to node name.
+     * @return A list of PathDTO objects containing node sequences and their associated costs.
+     */
+    List<PathDTO> getAllPaths(Map<Integer, String> nodeNames);
 
     /**
      * Retrieves the path with the least cost for a specific cost component.
@@ -39,4 +47,11 @@ public interface PathComponentManagerInterface {
      * @return The binary file path where the paths are stored.
      */
     String storePaths(String graphName);
+
+    /**
+     * Loads pre-computed path storage from a binary file.
+     * @param binaryFilePath The binary file path where the paths are stored.
+     */
+    void loadPaths(String binaryFilePath);
 }
+

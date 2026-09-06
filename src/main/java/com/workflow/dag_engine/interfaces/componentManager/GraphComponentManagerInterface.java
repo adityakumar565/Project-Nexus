@@ -58,6 +58,8 @@ public interface GraphComponentManagerInterface {
     public int getCostDimension();
     
     public List<String> getCostNames();
+    
+    public void updateMetaData(List<String> costNames);
 
     public boolean containsNode(int nodeId);
 

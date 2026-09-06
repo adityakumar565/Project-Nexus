@@ -3,23 +3,25 @@ package com.workflow.dag_engine.models.path;
 import java.util.List;
 import java.util.Map;
 
+import com.workflow.dag_engine.models.graph.Node;
+
 public class PathDTO {
     
-    private List<Integer> nodeSequence;
+    private List<Node> nodeSequence;
     private Map<String, Float> pathCosts;
 
     public PathDTO() {}
 
-    public PathDTO(List<Integer> nodeSequence, Map<String, Float> pathCosts) {
+    public PathDTO(List<Node> nodeSequence, Map<String, Float> pathCosts) {
         this.nodeSequence = nodeSequence;
         this.pathCosts = pathCosts;
     }
 
-    public List<Integer> getNodeSequence() {
+    public List<Node> getNodeSequence() {
         return nodeSequence;
     }
 
-    public void setNodeSequence(List<Integer> nodeSequence) {
+    public void setNodeSequence(List<Node> nodeSequence) {
         this.nodeSequence = nodeSequence;
     }
 

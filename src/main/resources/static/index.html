@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DAG Engine - Glass UI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="app.js?v=7" defer></script>
+</head>
+<body>
+    <!-- Dynamic Background -->
+    <div class="bg-mesh">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <!-- App Container -->
+    <div id="app">
+        <!-- Landing View -->
+        <div id="landing-view" class="view active">
+            <div class="glass-card login-card">
+                <div class="logo">
+                    <i data-lucide="git-merge"></i>
+                </div>
+                <h1 id="auth-title">DAG Engine</h1>
+                <p class="subtitle" id="auth-subtitle">Login with your credentials</p>
+
+                <!-- Auth Tabs -->
+                <div class="auth-tabs">
+                    <button class="auth-tab active" id="tab-login" type="button">Login</button>
+                    <button class="auth-tab" id="tab-register" type="button">Create User</button>
+                </div>
+                
+                <div id="login-error" class="error-message hidden"></div>
+                <div id="login-success" class="success-message hidden"></div>
+                
+                <!-- Login Form -->
+                <form id="login-form">
+                    <div class="input-group">
+                        <i data-lucide="user"></i>
+                        <input type="text" id="username" placeholder="Username" required autocomplete="username">
+                    </div>
+                    <div class="input-group">
+                        <i data-lucide="lock"></i>
+                        <input type="password" id="password" placeholder="Password" required autocomplete="current-password">
+                    </div>
+                    <button type="submit" class="glass-btn primary" id="login-btn">Login</button>
+                    <p class="auth-switch">Don't have an account? <a id="switch-to-register">Create User</a></p>
+                </form>
+
+                <!-- Create User Form -->
+                <form id="register-form" class="hidden">
+                    <div class="input-group">
+                        <i data-lucide="user-plus"></i>
+                        <input type="text" id="reg-username" placeholder="New Username" required autocomplete="username">
+                    </div>
+                    <div class="input-group">
+                        <i data-lucide="lock"></i>
+                        <input type="password" id="reg-password" placeholder="New Password" required autocomplete="new-password">
+                    </div>
+                    <button type="submit" class="glass-btn success" id="register-btn">Create User</button>
+                    <p class="auth-switch">Already have an account? <a id="switch-to-login">Login</a></p>
+                </form>
+            </div>
+        </div>
+
+        <!-- Dashboard View -->
+        <div id="dashboard-view" class="view hidden">
+            <header class="glass-header">
+                <div class="header-left">
+                    <div class="logo-small">
+                        <i data-lucide="git-merge"></i>
+                    </div>
+                    <h2>DAG Engine</h2>
+                </div>
+                <div class="header-right">
+                    <div class="user-info">
+                        <i data-lucide="user-circle"></i>
+                        <span id="current-username">User</span>
+                    </div>
+                    <button class="glass-btn icon-btn" id="logout-btn" title="Logout">
+                        <i data-lucide="log-out"></i>
+                    </button>
+                </div>
+            </header>
+
+            <main class="dashboard-content">
+                <div class="toolbar glass-panel">
+                    <h3>Your Graphs</h3>
+                    <div class="actions">
+                        <button class="glass-btn success" id="create-graph-btn">
+                            <i data-lucide="plus"></i> New Graph
+                        </button>
+                        <button class="glass-btn danger" id="delete-selected-btn" disabled>
+                            <i data-lucide="trash-2"></i> Delete Selected
+                        </button>
+                    </div>
+                </div>
+
+                <div id="graphs-loading" class="loading-state hidden">
+                    <i data-lucide="loader-2" class="spin"></i> Loading graphs...
+                </div>
+
+                <div id="graphs-empty" class="empty-state hidden">
+                    <div class="glass-card empty-card">
+                        <i data-lucide="folder-open"></i>
+                        <p>No graphs found.</p>
+                        <button class="glass-btn primary mt-4" id="empty-create-btn">Create your first graph</button>
+                    </div>
+                </div>
+
+                <div class="graphs-grid" id="graphs-grid">
+                    <!-- Graph cards will be injected here by app.js -->
+                </div>
+            </main>
+        </div>
+
+        <!-- Graph View Screen -->
+        <div id="graph-view" class="view hidden">
+            <header class="glass-header graph-header">
+                <div class="header-left">
+                    <button class="glass-btn icon-btn" id="back-to-dashboard-btn" title="Back to Graphs">
+                        <i data-lucide="arrow-left"></i>
+                    </button>
+                    <div class="graph-title-group" id="graph-title-group" title="Click to edit name and description">
+                        <h2 id="gv-graph-name">Graph View</h2>
+                        <i data-lucide="edit-3" class="edit-title-icon"></i>
+                        <span class="badge" id="gv-graph-id">ID: -</span>
+                    </div>
+                </div>
+                <div class="header-center">
+                    <div class="meta-pill">
+                        <i data-lucide="circle-dot"></i>
+                        <span id="gv-node-count">0</span> Nodes
+                    </div>
+                    <div class="meta-pill">
+                        <i data-lucide="arrow-right"></i>
+                        <span id="gv-edge-count">0</span> Edges
+                    </div>
+                    <div class="meta-pill hidden clickable-pill" id="gv-cost-pill" title="Click to view cost parameters list">
+                        <i data-lucide="layers"></i>
+                        <span id="gv-cost-dimensions">-</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="mode-toggle-group">
+                        <span class="mode-label">View</span>
+                        <label class="switch">
+                            <input type="checkbox" id="edit-mode-toggle">
+                            <span class="slider round"></span>
+                        </label>
+                        <span class="mode-label">Edit</span>
+                    </div>
+                    <button class="glass-btn success hidden" id="save-graph-btn">
+                        <i data-lucide="save"></i> Save Changes
+                    </button>
+                    <div class="tool-divider"></div>
+                    <div class="zoom-controls glass-pill">
+                        <button class="icon-tool-btn" id="zoom-in-btn" title="Zoom In">
+                            <i data-lucide="zoom-in"></i>
+                        </button>
+                        <span class="zoom-level-text" id="zoom-level-badge">100%</span>
+                        <button class="icon-tool-btn" id="zoom-out-btn" title="Zoom Out">
+                            <i data-lucide="zoom-out"></i>
+                        </button>
+                        <div class="tool-divider"></div>
+                        <button class="icon-tool-btn" id="zoom-fit-btn" title="Fit to Screen">
+                            <i data-lucide="maximize"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <main class="graph-viewport-container" id="graph-viewport-container">
+                <!-- SVG Graph Surface -->
+                <svg id="graph-svg"></svg>
+
+                <!-- Cost Parameters Catalogue (Top Left Expandable Card) -->
+                <div id="cost-catalogue-panel" class="glass-card cost-catalogue hidden">
+                    <div class="cost-header" id="cost-catalogue-toggle" title="Click to expand/collapse">
+                        <div class="cost-title-wrap">
+                            <i data-lucide="layers"></i>
+                            <h4>Cost Parameters</h4>
+                            <span class="badge" id="cost-catalogue-count">0</span>
+                        </div>
+                        <div class="cost-header-actions">
+                            <button class="icon-tool-btn hidden" id="add-cost-dim-btn" title="Add Cost Parameter" type="button">
+                                <i data-lucide="plus"></i>
+                            </button>
+                            <button class="icon-tool-btn" id="toggle-cost-catalogue-btn" title="Expand/Collapse" type="button">
+                                <i data-lucide="chevron-down" id="cost-catalogue-chevron"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="cost-list" id="global-cost-list">
+                        <!-- Cost items populated here vertically -->
+                    </div>
+                </div>
+
+                <!-- Collapsible Right Data Panel (Inspector Side Menu) -->
+                <aside id="graph-side-panel" class="graph-side-panel">
+                    <div class="side-panel-header">
+                        <div class="side-panel-title-wrap">
+                            <i data-lucide="info"></i>
+                            <h3 id="sp-panel-title">Inspector</h3>
+                        </div>
+                        <button class="icon-tool-btn" id="close-side-panel-btn" title="Close Panel">
+                            <i data-lucide="x"></i>
+                        </button>
+                    </div>
+
+                    <div class="side-panel-content" id="sp-content">
+                        <!-- Placeholder / Prompt State -->
+                        <div id="sp-empty-state" class="sp-empty">
+                            <i data-lucide="mouse-pointer-click"></i>
+                            <p>Select or hover over any node or edge to inspect its attributes, costs, and connections.</p>
+                        </div>
+
+                        <!-- View Mode Details Section -->
+                        <div id="sp-details" class="sp-details hidden">
+                            <div class="sp-badge-row">
+                                <span class="sp-badge" id="sp-type-badge">NODE</span>
+                                <span class="sp-id-badge" id="sp-id-badge">ID: 1</span>
+                            </div>
+                            <h4 class="sp-name" id="sp-name">Home</h4>
+                            <div class="sp-section">
+                                <label class="sp-label">Description</label>
+                                <p class="sp-desc" id="sp-desc">Starting location</p>
+                            </div>
+                            <div class="sp-section" id="sp-connection-section">
+                                <label class="sp-label">Connection</label>
+                                <p class="sp-text" id="sp-connection-text">-</p>
+                            </div>
+                            <div class="sp-section">
+                                <label class="sp-label">Cost Breakdown</label>
+                                <div class="sp-cost-list" id="sp-cost-list">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Edit Mode Details Section: Two Parts (Upper: Node, Bottom: Edge) -->
+                        <div id="sp-edit-section" class="sp-edit-section hidden">
+                            <!-- Upper: Node Section -->
+                            <div class="edit-split-section" id="edit-nodes-section">
+                                <div class="split-section-header">
+                                    <div class="split-header-left">
+                                        <i data-lucide="circle-dot"></i>
+                                        <h4>Nodes</h4>
+                                    </div>
+                                    <div class="split-header-actions">
+                                        <button class="glass-btn primary btn-sm" id="add-node-btn" title="Add New Node">
+                                            <i data-lucide="plus"></i> Add
+                                        </button>
+                                        <button class="glass-btn danger-outline btn-sm hidden" id="cancel-node-btn" title="Deselect Node">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div id="node-empty-prompt" class="edit-empty-prompt">
+                                    <i data-lucide="mouse-pointer"></i>
+                                    <span>Select or add a node to view/edit details.</span>
+                                </div>
+
+                                <div id="edit-node-form" class="edit-form hidden">
+                                    <div class="sp-badge-row mb-2">
+                                        <span class="sp-badge node-badge">NODE</span>
+                                        <span class="sp-id-badge" id="edit-node-id">ID: 1</span>
+                                    </div>
+                                    <div class="input-group-sm">
+                                        <label>Name</label>
+                                        <input type="text" id="edit-node-name" class="glass-input-sm" placeholder="Node Name">
+                                    </div>
+                                    <div class="input-group-sm">
+                                        <label>Description</label>
+                                        <textarea id="edit-node-desc" class="glass-input-sm" rows="2" placeholder="Node Description"></textarea>
+                                    </div>
+                                    <div class="sp-section mt-2">
+                                        <label class="sp-label">Costs</label>
+                                        <div id="edit-node-costs" class="edit-cost-grid">
+                                            <!-- Cost inputs populated here -->
+                                        </div>
+                                    </div>
+                                    <button class="glass-btn danger btn-sm w-full mt-3" id="delete-node-btn">
+                                        <i data-lucide="trash-2"></i> Delete Node
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="edit-section-divider"></div>
+
+                            <!-- Bottom: Edge Section -->
+                            <div class="edit-split-section" id="edit-edges-section">
+                                <div class="split-section-header">
+                                    <div class="split-header-left">
+                                        <i data-lucide="git-commit"></i>
+                                        <h4>Edges</h4>
+                                    </div>
+                                    <div class="split-header-actions">
+                                        <button class="glass-btn primary btn-sm" id="add-edge-btn" title="Add New Edge">
+                                            <i data-lucide="plus"></i> Add
+                                        </button>
+                                        <button class="glass-btn danger-outline btn-sm hidden" id="cancel-edge-btn" title="Deselect Edge">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Edge Add Mode Instruction Banner -->
+                                <div id="edge-add-instruction" class="edge-instruction hidden">
+                                    <i data-lucide="mouse-pointer-click"></i>
+                                    <span>Click source node, then click target node.</span>
+                                    <button class="glass-btn danger-outline btn-sm mt-1" id="cancel-add-edge-btn">Cancel</button>
+                                </div>
+
+                                <div id="edge-empty-prompt" class="edit-empty-prompt">
+                                    <i data-lucide="mouse-pointer"></i>
+                                    <span>Select or add an edge to view/edit details.</span>
+                                </div>
+
+                                <div id="edit-edge-form" class="edit-form hidden">
+                                    <div class="sp-badge-row mb-2">
+                                        <span class="sp-badge edge-badge">EDGE</span>
+                                        <span class="sp-id-badge" id="edit-edge-id">ID: 1</span>
+                                    </div>
+                                    <div class="input-group-sm">
+                                        <label>Name</label>
+                                        <input type="text" id="edit-edge-name" class="glass-input-sm" placeholder="Edge Name">
+                                    </div>
+                                    <div class="input-group-sm">
+                                        <label>Description</label>
+                                        <textarea id="edit-edge-desc" class="glass-input-sm" rows="2" placeholder="Edge Description"></textarea>
+                                    </div>
+                                    <div class="sp-section mt-2">
+                                        <label class="sp-label">Costs</label>
+                                        <div id="edit-edge-costs" class="edit-cost-grid">
+                                            <!-- Cost inputs populated here -->
+                                        </div>
+                                    </div>
+                                    <button class="glass-btn danger btn-sm w-full mt-3" id="delete-edge-btn">
+                                        <i data-lucide="trash-2"></i> Delete Edge
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Reopen Side Panel Button (Visible when side panel is closed) -->
+                <button class="glass-btn icon-btn side-panel-reopen-btn hidden" id="reopen-side-panel-btn" title="Open Inspector">
+                    <i data-lucide="panel-right-open"></i>
+                </button>
+
+                <!-- Loading Overlay within graph view -->
+                <div id="graph-view-loading" class="loading-overlay hidden">
+                    <i data-lucide="loader-2" class="spin"></i> Loading Graph Data...
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Graph Details Edit Modal -->
+    <div id="graph-details-modal" class="modal-backdrop hidden">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title-wrap">
+                    <i data-lucide="edit-3"></i>
+                    <h3>Edit Graph Details</h3>
+                </div>
+                <button class="glass-btn icon-btn modal-close-btn" id="close-details-modal-btn" type="button" title="Close">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <form id="graph-details-form" class="modal-body">
+                <div class="modal-input-group">
+                    <label for="modal-graph-name">Graph Name <span class="required">*</span></label>
+                    <input type="text" id="modal-graph-name" class="glass-input" placeholder="Enter graph name" required autocomplete="off">
+                </div>
+                <div class="modal-input-group">
+                    <label for="modal-graph-desc">Graph Description</label>
+                    <textarea id="modal-graph-desc" class="glass-input" rows="3" placeholder="Enter graph description"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="glass-btn" id="cancel-graph-details-btn">Cancel</button>
+                    <button type="submit" class="glass-btn primary" id="save-graph-details-btn">
+                        <i data-lucide="save"></i> Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="glass-toast hidden">
+        <span id="toast-message"></span>
+    </div>
+
+</body>
+</html>

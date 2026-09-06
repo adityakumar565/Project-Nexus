@@ -1,6 +1,7 @@
 package com.workflow.dag_engine.componentManager.paths.component_manager;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
@@ -17,16 +18,26 @@ public class PathComponentManagerImpl implements PathComponentManagerInterface {
     private final PathBridgeInterface pathBridge;
 
     public PathComponentManagerImpl(GraphComponentManagerInterface graphCm, PathBridgeInterface pathBridge) {
+        this(graphCm, pathBridge, true);
+    }
+
+    public PathComponentManagerImpl(GraphComponentManagerInterface graphCm, PathBridgeInterface pathBridge, boolean autoBake) {
         this.graphCm = graphCm;
         this.pathBridge = pathBridge;
         
-        // Build the internal tree automatically
-        this.pathBridge.bake(graphCm);
+        if (autoBake) {
+            this.pathBridge.bake(graphCm);
+        }
     }
 
     @Override
     public List<PathDTO> getAllPaths() {
-        return pathBridge.sync(graphCm.getCostNames());
+        return getAllPaths(null);
+    }
+
+    @Override
+    public List<PathDTO> getAllPaths(Map<Integer, String> nodeNames) {
+        return pathBridge.sync(graphCm.getCostNames(), nodeNames);
     }
 
     @Override
@@ -98,4 +109,10 @@ public class PathComponentManagerImpl implements PathComponentManagerInterface {
     public String storePaths(String graphName) {
         return pathBridge.save(pathBridge.getActiveStorage(), graphName);
     }
+
+    @Override
+    public void loadPaths(String binaryFilePath) {
+        this.pathBridge.load(binaryFilePath);
+    }
 }
+

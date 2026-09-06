@@ -17,6 +17,7 @@ import com.workflow.dag_engine.componentManager.paths.interfaces.kernels.PathBri
 import com.workflow.dag_engine.componentManager.paths.interfaces.kernels.PathStorageInterface;
 import com.workflow.dag_engine.componentManager.paths.interfaces.kernels.PathUtilityInterface;
 import com.workflow.dag_engine.interfaces.componentManager.GraphComponentManagerInterface;
+import com.workflow.dag_engine.models.graph.Node;
 import com.workflow.dag_engine.models.path.PathDTO;
 
 @Component("pathBridge")
@@ -48,6 +49,11 @@ public class PathBridgeImpl implements PathBridgeInterface {
 
     @Override
     public List<PathDTO> sync(List<String> costNames) {
+        return sync(costNames, null);
+    }
+
+    @Override
+    public List<PathDTO> sync(List<String> costNames, Map<Integer, String> nodeNames) {
         if (activeStorage == null) {
             return new ArrayList<>();
         }
@@ -57,18 +63,24 @@ public class PathBridgeImpl implements PathBridgeInterface {
         
         List<PathDTO> result = new ArrayList<>();
         for (int i = 0; i < paths.length; i++) {
-            result.add(syncPath(paths[i], costs[i], costNames));
+            result.add(syncPath(paths[i], costs[i], costNames, nodeNames));
         }
         return result;
     }
 
     @Override
     public PathDTO syncPath(int[] rawPathSequence, float[] rawCosts, List<String> costNames) {
+        return syncPath(rawPathSequence, rawCosts, costNames, null);
+    }
+
+    @Override
+    public PathDTO syncPath(int[] rawPathSequence, float[] rawCosts, List<String> costNames, Map<Integer, String> nodeNames) {
         if (rawPathSequence == null) return null;
         
-        List<Integer> seq = new ArrayList<>(rawPathSequence.length);
+        List<Node> seq = new ArrayList<>(rawPathSequence.length);
         for (int id : rawPathSequence) {
-            seq.add(id);
+            String name = (nodeNames != null && nodeNames.containsKey(id)) ? nodeNames.get(id) : ("Node_" + id);
+            seq.add(new Node((long) id, name));
         }
         
         Map<String, Float> costMap = new HashMap<>();
@@ -113,7 +125,9 @@ public class PathBridgeImpl implements PathBridgeInterface {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(binaryFilePath))) {
             Object obj = ois.readObject();
             if (obj instanceof PathStorageInterface) {
-                return (PathStorageInterface) obj;
+                PathStorageInterface loaded = (PathStorageInterface) obj;
+                this.activeStorage = loaded;
+                return loaded;
             } else {
                 throw new RuntimeException("Loaded object is not a PathStorageInterface");
             }

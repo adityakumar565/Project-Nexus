@@ -63,6 +63,7 @@ public interface GraphStorageInterface {
     public float getEdgeCost(int sourceNodeId, int targetNodeId, int dimension);
     
     public List<String> getCostNames(); // metadata mapping
+    public void setCostNames(List<String> costNames);
 
     // 6. Topology
     public int[] getStartNodes(); // root nodes

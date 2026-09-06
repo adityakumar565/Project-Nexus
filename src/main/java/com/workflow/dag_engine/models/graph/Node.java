@@ -3,6 +3,9 @@ package com.workflow.dag_engine.models.graph;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Node {
 
     Long id;
@@ -17,6 +20,11 @@ public class Node {
         this.outgoingEdges = new ArrayList<>();
     }
 
+    public Node(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Node(Long id, String name, String description, Cost nodeCost) {
         this.id = id;
         this.name = name;
@@ -26,12 +34,15 @@ public class Node {
         this.outgoingEdges = new ArrayList<>();
     }
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public Integer getDegree() {
-        if (this.incomingEdges == null || this.outgoingEdges == null) {
-            return 0;
+        if (this.incomingEdges == null && this.outgoingEdges == null) {
+            return null;
         }
 
-        return this.incomingEdges.size() + this.outgoingEdges.size();
+        int in = this.incomingEdges != null ? this.incomingEdges.size() : 0;
+        int out = this.outgoingEdges != null ? this.outgoingEdges.size() : 0;
+        return in + out;
     }
 
     public void setDegree(Integer degree) {

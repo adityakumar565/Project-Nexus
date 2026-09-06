@@ -1,6 +1,7 @@
 package com.workflow.dag_engine.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,8 +24,11 @@ import com.workflow.dag_engine.models.enums.ImplementationType;
 import com.workflow.dag_engine.models.graph.GraphMetaData;
 import com.workflow.dag_engine.models.graph.GraphResponse;
 import com.workflow.dag_engine.models.graph.GraphUploadRequest;
+import com.workflow.dag_engine.models.graph.GraphUpdateRequest;
 import com.workflow.dag_engine.models.graph.UserGraphRequest;
 import com.workflow.dag_engine.models.graph.UserGraphResponse;
+import com.workflow.dag_engine.models.path.GraphPathResponse;
+import com.workflow.dag_engine.models.path.PathDTO;
 import com.workflow.dag_engine.models.userModel.UserRequest;
 import com.workflow.dag_engine.models.userModel.UserResponse;
 import com.workflow.dag_engine.models.validation.ApplicationException;
@@ -138,19 +142,34 @@ public class GraphImpl implements GraphInterface {
         objGraphResponse.setObjErrorDetails(objErrorDetails);
 
         try {
-            if (graphMetaData == null || graphMetaData.getGraphId() == null) {
-                throw new ApplicationException("2001", "Invalid GraphMetaData or graphId");
+            if (graphMetaData == null) {
+                throw new ApplicationException("2001", "Invalid GraphMetaData");
             }
 
             Long graphId = graphMetaData.getGraphId();
+            GraphEntity objGraphEntity = null;
 
-            GraphEntity objGraphEntity = objGraphRepository.findById(graphId).orElse(null);
+            if (graphId != null) {
+                objGraphEntity = objGraphRepository.findById(graphId).orElse(null);
+            } else if (graphMetaData.getUserId() != null) {
+                List<GraphEntity> userGraphs = objGraphRepository.findByUserId(graphMetaData.getUserId());
+                if (userGraphs != null && !userGraphs.isEmpty()) {
+                    objGraphEntity = userGraphs.get(0);
+                    graphId = objGraphEntity.getGraphId();
+                }
+            } else {
+                throw new ApplicationException("2001", "Invalid GraphMetaData: graphId or userId required");
+            }
+
             if (objGraphEntity == null) {
                 throw new ApplicationException("2002", "Error in loading graph Or Graph does not Exists for the user");
             }
 
             String storagePath = objGraphEntity.getBinaryFilePath();
             GraphUploadRequest graphUpload = objGraphEntity.getGraphData();
+            if (graphUpload != null && graphUpload.getGraphId() == null) {
+                graphUpload.setGraphId(objGraphEntity.getGraphId());
+            }
             objGraphResponse.setObjGraphUploadRequest(graphUpload);
             objGraphResponse.setGraphName(objGraphEntity.getGraphName());
             objGraphResponse.setGraphDescription(objGraphEntity.getGraphDescription());
@@ -277,10 +296,10 @@ public class GraphImpl implements GraphInterface {
                 throw new ApplicationException("2004", "Graph does not belong to the specified user");
             }
 
-            // 5. Check if graph is currently loaded in memory
+            // 5. Check if graph is currently loaded in memory - must NOT allow deletion while active
             if (inMemoryGraphs.containsKey(graphId)) {
                 throw new ApplicationException("2005",
-                        "Cannot delete graph: Graph is currently active in memory. Please close the graph first.");
+                        "Cannot delete graph: Graph is currently active in memory. Close or unload it first.");
             }
 
             // 6. Delete binary file from disk
@@ -354,7 +373,11 @@ public class GraphImpl implements GraphInterface {
             if (graphEntities != null) {
                 for (GraphEntity entity : graphEntities) {
                     if (entity.getGraphData() != null) {
-                        graphList.add(entity.getGraphData());
+                        GraphUploadRequest req = entity.getGraphData();
+                        if (req.getGraphId() == null) {
+                            req.setGraphId(entity.getGraphId());
+                        }
+                        graphList.add(req);
                     }
                 }
             }
@@ -371,9 +394,171 @@ public class GraphImpl implements GraphInterface {
     }
 
     @Override
-    public GraphResponse updateGraph(GraphUploadRequest graphUpdateRequest) throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'updateGraph'");
+    public GraphResponse updateGraph(GraphUpdateRequest request) throws Exception {
+        String methodName = "Inside GraphImpl.updateGraph --> ";
+        log.info(methodName + " request: " + request);
+
+        if (request == null || request.getGraphId() == null) {
+            GraphResponse err = new GraphResponse();
+            err.setObjErrorDetails(new ErrorDetails("400", "Graph ID cannot be null"));
+            return err;
+        }
+
+        if (request.getUpdateType() == null) {
+            GraphResponse err = new GraphResponse();
+            err.setObjErrorDetails(new ErrorDetails("400", "Update Type cannot be null"));
+            return err;
+        }
+
+        if (request.getUpdateType().equalsIgnoreCase("C")) {
+            // Complex Update: Re-generate binaries and overwrite
+            GraphEntity entity = objGraphRepository.findById(request.getGraphId()).orElseThrow(() -> new ApplicationException("404", "Graph Not Found"));
+            
+            // Release memory if loaded
+            if (inMemoryGraphs.containsKey(request.getGraphId())) {
+                GraphComponentManagerInterface manager = inMemoryGraphs.remove(request.getGraphId());
+                manager.unload();
+            }
+
+            // Generate new binary and path files
+            String storageGraphPath = objGraphComponentManager.transformAndStoreGraph(request);
+            PathComponentManagerInterface pathCm = new PathComponentManagerImpl(objGraphComponentManager, pathBridge);
+            String pathStoragePath = pathCm.storePaths(request.getGraphName());
+            
+            // Update entity with new structure and files
+            entity.setGraphName(request.getGraphName());
+            entity.setGraphDescription(request.getGraphDescription());
+            entity.setGraphData(request);
+            entity.setNumNodes(objGraphComponentManager.getNumberOfNodes());
+            entity.setNumEdges(objGraphComponentManager.getNumberOfEdges());
+            entity.setCostDimension(objGraphComponentManager.getCostDimension());
+            
+            GraphEntity tempEntity = GraphUtility.convertGraphUploadRequestToGraphEntity(request);
+            entity.setIsCyclic(tempEntity.getIsCyclic());
+            
+            entity.setBinaryFilePath(storageGraphPath);
+            entity.setPathBinaryFilePath(pathStoragePath);
+            
+            objGraphRepository.save(entity);
+            
+            // Reload into memory
+            inMemoryGraphs.put(entity.getGraphId(), objGraphComponentManager);
+            
+            GraphResponse graphResponse = new GraphResponse();
+            graphResponse.setObjErrorDetails(new ErrorDetails(1));
+            graphResponse.setGraphName(entity.getGraphName());
+            graphResponse.setGraphDescription(entity.getGraphDescription());
+            graphResponse.setObjGraphUploadRequest(request);
+            return graphResponse;
+            
+        } else if (request.getUpdateType().equalsIgnoreCase("S")) {
+            // Simple Update: Update metadata only
+            GraphEntity entity = objGraphRepository.findById(request.getGraphId()).orElseThrow(() -> new ApplicationException("404", "Graph Not Found"));
+            
+            entity.setGraphName(request.getGraphName());
+            entity.setGraphDescription(request.getGraphDescription());
+            entity.setGraphData(request); 
+            
+            objGraphRepository.save(entity);
+            
+            if (inMemoryGraphs.containsKey(request.getGraphId())) {
+                GraphComponentManagerInterface manager = inMemoryGraphs.get(request.getGraphId());
+                manager.updateMetaData(request.getCostNames());
+            }
+            
+            GraphResponse graphResponse = new GraphResponse();
+            graphResponse.setObjErrorDetails(new ErrorDetails(1));
+            graphResponse.setGraphName(entity.getGraphName());
+            graphResponse.setGraphDescription(entity.getGraphDescription());
+            graphResponse.setObjGraphUploadRequest(request);
+            return graphResponse;
+        } else {
+            GraphResponse err = new GraphResponse();
+            err.setObjErrorDetails(new ErrorDetails("400", "Invalid update type: " + request.getUpdateType()));
+            return err;
+        }
+    }
+
+    @Override
+    public GraphPathResponse getGraphPaths(GraphMetaData graphMetaData) throws Exception {
+        String methodName = "Inside GraphImpl.getGraphPaths --> ";
+        log.info(methodName + " graphMetaData: " + graphMetaData);
+
+        GraphPathResponse response = new GraphPathResponse();
+        ErrorDetails objErrorDetails = new ErrorDetails(1);
+        response.setObjErrorDetails(objErrorDetails);
+
+        try {
+            if (graphMetaData == null || graphMetaData.getGraphId() == null) {
+                throw new ApplicationException("2001", "Invalid GraphMetaData or graphId");
+            }
+
+            Long graphId = graphMetaData.getGraphId();
+            response.setGraphId(graphId);
+
+            GraphEntity objGraphEntity = objGraphRepository.findById(graphId).orElse(null);
+            if (objGraphEntity == null) {
+                throw new ApplicationException("2002", "Error in loading graph Or Graph does not Exist for the user");
+            }
+
+            response.setGraphName(objGraphEntity.getGraphName());
+
+            // 1. Ensure GraphComponentManager is loaded in memory
+            GraphComponentManagerInterface manager = inMemoryGraphs.get(graphId);
+            if (manager == null) {
+                manager = componentManagerFactory.getComponentManager(objGraphEntity.getImplementationType());
+                String storagePath = objGraphEntity.getBinaryFilePath();
+                if (storagePath != null && !storagePath.isEmpty() && new java.io.File(storagePath).exists()) {
+                    manager.loadGraph(storagePath);
+                }
+                inMemoryGraphs.put(graphId, manager);
+                log.info(methodName + " Graph " + graphId + " loaded into in-memory registry");
+            }
+
+            // 2. Load or compute paths
+            String pathStoragePath = objGraphEntity.getPathBinaryFilePath();
+            PathComponentManagerInterface pathCm;
+
+            if (pathStoragePath != null && !pathStoragePath.isEmpty() && new java.io.File(pathStoragePath).exists()) {
+                log.info(methodName + " Loading pre-computed paths from file: " + pathStoragePath);
+                pathCm = new PathComponentManagerImpl(manager, pathBridge, false);
+                pathCm.loadPaths(pathStoragePath);
+            } else {
+                log.info(methodName + " Pre-computed path file not found. Baking paths from graph component manager.");
+                pathCm = new PathComponentManagerImpl(manager, pathBridge, true);
+                String newPathStoragePath = pathCm.storePaths(objGraphEntity.getGraphName());
+                objGraphEntity.setPathBinaryFilePath(newPathStoragePath);
+                objGraphEntity.setPathVersion(1);
+                objGraphRepository.save(objGraphEntity);
+                log.info(methodName + " Newly baked paths saved to: " + newPathStoragePath);
+            }
+
+            // 3. Extract node names from graphData
+            Map<Integer, String> nodeNames = new HashMap<>();
+            if (objGraphEntity.getGraphData() != null && objGraphEntity.getGraphData().getNode() != null) {
+                for (com.workflow.dag_engine.models.graph.Node n : objGraphEntity.getGraphData().getNode()) {
+                    if (n.getId() != null) {
+                        nodeNames.put(n.getId().intValue(), n.getName());
+                    }
+                }
+            }
+
+            List<PathDTO> paths = pathCm.getAllPaths(nodeNames);
+            response.setPaths(paths != null ? paths : new ArrayList<>());
+            response.setTotalPaths(paths != null ? paths.size() : 0);
+
+        } catch (ApplicationException a) {
+            log.error(methodName + " ApplicationException: " + a.message);
+            objErrorDetails.setErrorCode(a.code);
+            objErrorDetails.setErrorMessage(a.message);
+        } catch (Exception e) {
+            log.error(methodName + " Exception: ", e);
+            objErrorDetails.setErrorCode("500");
+            objErrorDetails.setErrorMessage("Error in calculating paths: " + e.getMessage());
+        }
+
+        return response;
     }
 
 }
+
