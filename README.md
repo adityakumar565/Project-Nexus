@@ -11,11 +11,13 @@
 
 ## 🎬 Live Interactive UI & Demo
 
-> ### 🎥 [**Watch the Interactive UI Walkthrough & Demo Video**](https://your-video-link-here)
+[![Watch DAG Engine Demo](https://img.youtube.com/vi/hIkw_Fb5ZgA/maxresdefault.jpg)](https://youtu.be/hIkw_Fb5ZgA)
+
+> ### 🎥 [**Watch the Interactive UI Walkthrough & Demo on YouTube**](https://youtu.be/hIkw_Fb5ZgA)
 >
-> [![DAG Engine UI Demo](https://img.shields.io/badge/▶%20Play%20Video-DAG%20Engine%20Interactive%20UI%20Demo-blue?style=for-the-badge&logo=youtube&logoColor=white)](https://your-video-link-here)
+> [![YouTube Video](https://img.shields.io/badge/▶%20Play%20Video-DAG%20Engine%20Interactive%20UI%20Demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://youtu.be/hIkw_Fb5ZgA)
 >
-> *Watch the end-to-end walkthrough showcasing AI prompt-to-graph synthesis, live canvas manipulation, cycle validation (Error Code 69), multi-dimensional cost routing, and automated prefix-tree path calculation.*
+> *Watch the complete end-to-end demonstration showcasing AI prompt-to-graph synthesis, live canvas manipulation, cycle validation (Error Code 69), multi-dimensional cost routing, and automated prefix-tree path calculation.*
 
 ---
 
