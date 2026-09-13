@@ -91,7 +91,16 @@ public class GraphImpl implements GraphInterface {
             return graphResponse;
         }
 
-        // 2. Proceed with graph entity conversion and saving
+        // 2. Validate DAG constraint (no cycles allowed) before storage and path generation
+        if (GraphUtility.hasCycle(graphUploadRequest)) {
+            log.warn(methodName + " Graph contains cycles! Rejecting upload for graph: " + graphUploadRequest.getGraphName());
+            graphResponse.setGraphName("Validation Error: " + graphUploadRequest.getGraphName());
+            graphResponse.setGraphDescription("Graph contains cycle(s). Directed Acyclic Graphs (DAG) cannot contain cycles.");
+            graphResponse.setObjErrorDetails(new ErrorDetails("69", "Graph validation failed: Cycle detected. A Directed Acyclic Graph (DAG) cannot contain cycles."));
+            return graphResponse;
+        }
+
+        // 3. Proceed with graph entity conversion and saving
         graphResponse.setObjErrorDetails(objErrorDetails);
 
         GraphEntity objGraphEntity = GraphUtility.convertGraphUploadRequestToGraphEntity(graphUploadRequest);
@@ -121,10 +130,12 @@ public class GraphImpl implements GraphInterface {
 
         if (objGraphEntity.getGraphId() != null) {
             inMemoryGraphs.put(objGraphEntity.getGraphId(), objGraphComponentManager);
+            graphUploadRequest.setGraphId(objGraphEntity.getGraphId());
         }
 
         graphResponse.setGraphName(objGraphEntity.getGraphName());
         graphResponse.setGraphDescription(objGraphEntity.getGraphDescription());
+        graphResponse.setObjGraphUploadRequest(graphUploadRequest);
 
         log.info(methodName + " Returning graphResponse:" + graphResponse.toString());
 
@@ -412,6 +423,17 @@ public class GraphImpl implements GraphInterface {
         }
 
         if (request.getUpdateType().equalsIgnoreCase("C")) {
+            // Validate DAG constraint (no cycles allowed) BEFORE mutating state, files, or calculating paths
+            if (GraphUtility.hasCycle(request)) {
+                log.warn(methodName + " Graph contains cycles! Rejecting update for graphId: " + request.getGraphId());
+                GraphResponse cycleResponse = new GraphResponse();
+                cycleResponse.setGraphName(request.getGraphName());
+                cycleResponse.setGraphDescription("Graph contains cycle(s). Directed Acyclic Graphs (DAG) cannot contain cycles.");
+                cycleResponse.setObjErrorDetails(new ErrorDetails("69", "Graph validation failed: Cycle detected. A Directed Acyclic Graph (DAG) cannot contain cycles."));
+                cycleResponse.setObjGraphUploadRequest(request);
+                return cycleResponse;
+            }
+
             // Complex Update: Re-generate binaries and overwrite
             GraphEntity entity = objGraphRepository.findById(request.getGraphId()).orElseThrow(() -> new ApplicationException("404", "Graph Not Found"));
             

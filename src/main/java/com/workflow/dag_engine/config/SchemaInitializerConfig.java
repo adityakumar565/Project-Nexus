@@ -15,7 +15,7 @@ public class SchemaInitializerConfig {
 
     public SchemaInitializerConfig(DataSource dataSource) {
         try (Connection conn = dataSource.getConnection();
-             Statement stmt = conn.createStatement()) {
+                Statement stmt = conn.createStatement()) {
             // 1. Create Schemas
             stmt.execute("CREATE SCHEMA IF NOT EXISTS logs;");
             stmt.execute("CREATE SCHEMA IF NOT EXISTS workflow_user;");
@@ -23,25 +23,28 @@ public class SchemaInitializerConfig {
 
             // 2. Create Table logs.api_logs
             String createTableSql = """
-                CREATE TABLE IF NOT EXISTS logs.api_logs (
-                    id BIGSERIAL PRIMARY KEY,
-                    correlation_id VARCHAR(27) NOT NULL,
-                    api_name VARCHAR(100),
-                    api_url VARCHAR(255),
-                    http_method VARCHAR(10),
-                    user_name VARCHAR(100),
-                    start_time TIMESTAMP,
-                    end_time TIMESTAMP,
-                    duration_ms BIGINT,
-                    api_request TEXT,
-                    api_response TEXT,
-                    status_code VARCHAR(20)
-                );
-                CREATE INDEX IF NOT EXISTS idx_api_logs_correlation_id ON logs.api_logs(correlation_id);
-                CREATE INDEX IF NOT EXISTS idx_api_logs_user_name ON logs.api_logs(user_name);
-                CREATE INDEX IF NOT EXISTS idx_api_logs_start_time ON logs.api_logs(start_time);
-            """;
+                        CREATE TABLE IF NOT EXISTS logs.api_logs (
+                            id BIGSERIAL PRIMARY KEY,
+                            correlation_id VARCHAR(27) NOT NULL,
+                            api_name VARCHAR(100),
+                            api_url VARCHAR(255),
+                            http_method VARCHAR(10),
+                            user_name VARCHAR(100),
+                            start_time TIMESTAMP,
+                            end_time TIMESTAMP,
+                            duration_ms BIGINT,
+                            api_request TEXT,
+                            api_response TEXT,
+                            status_code VARCHAR(20)
+                        );
+                        CREATE INDEX IF NOT EXISTS idx_api_logs_correlation_id ON logs.api_logs(correlation_id);
+                        CREATE INDEX IF NOT EXISTS idx_api_logs_user_name ON logs.api_logs(user_name);
+                        CREATE INDEX IF NOT EXISTS idx_api_logs_start_time ON logs.api_logs(start_time);
+                    """;
             stmt.execute(createTableSql);
+            stmt.execute("GRANT ALL ON SCHEMA logs TO dag_engine_user;");
+            stmt.execute("GRANT ALL ON ALL TABLES IN SCHEMA logs TO dag_engine_user;");
+            stmt.execute("GRANT ALL ON ALL SEQUENCES IN SCHEMA logs TO dag_engine_user;");
 
             log.info("SchemaInitializerConfig: Verified schemas and table logs.api_logs exist.");
         } catch (Exception e) {
