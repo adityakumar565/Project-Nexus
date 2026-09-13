@@ -121,10 +121,12 @@ public class GraphImpl implements GraphInterface {
 
         if (objGraphEntity.getGraphId() != null) {
             inMemoryGraphs.put(objGraphEntity.getGraphId(), objGraphComponentManager);
+            graphUploadRequest.setGraphId(objGraphEntity.getGraphId());
         }
 
         graphResponse.setGraphName(objGraphEntity.getGraphName());
         graphResponse.setGraphDescription(objGraphEntity.getGraphDescription());
+        graphResponse.setObjGraphUploadRequest(graphUploadRequest);
 
         log.info(methodName + " Returning graphResponse:" + graphResponse.toString());
 

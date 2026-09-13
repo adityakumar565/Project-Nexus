@@ -58,6 +58,18 @@ const graphsGrid = document.getElementById('graphs-grid');
 const graphsLoading = document.getElementById('graphs-loading');
 const graphsEmpty = document.getElementById('graphs-empty');
 const deleteSelectedBtn = document.getElementById('delete-selected-btn');
+const createGraphBtn = document.getElementById('create-graph-btn');
+const createAiGraphBtn = document.getElementById('create-ai-graph-btn');
+
+// AI Terminal Elements
+const aiChatTerminal = document.getElementById('ai-chat-terminal');
+const closeAiTerminalBtn = document.getElementById('close-ai-terminal-btn');
+const aiPromptInput = document.getElementById('ai-prompt-input');
+const aiGenerateBtn = document.getElementById('ai-generate-btn');
+const aiGenerateBtnText = document.getElementById('ai-generate-btn-text');
+const aiErrorModal = document.getElementById('ai-error-modal');
+const aiErrorMessage = document.getElementById('ai-error-message');
+const aiErrorCloseBtn = document.getElementById('ai-error-close-btn');
 
 // Graph View DOM Elements
 const backToDashboardBtn = document.getElementById('back-to-dashboard-btn');
@@ -739,6 +751,10 @@ async function openGraphView(graphId) {
     graphView.classList.add('active');
     graphViewLoading.classList.remove('hidden');
 
+    // Reset Edit Mode toggle to false upon opening a graph
+    if (editModeToggle) editModeToggle.checked = false;
+    isEditMode = false;
+
     // Reset Side Panel State
     openSidePanel();
     spEmptyState.classList.remove('hidden');
@@ -789,6 +805,8 @@ function backToDashboard() {
     }
     clearPathHighlightOnCanvas();
     selectedElement = null;
+    if (editModeToggle) editModeToggle.checked = false;
+    isEditMode = false;
     graphView.classList.add('hidden');
     graphView.classList.remove('active');
     dashboardView.classList.remove('hidden');
@@ -826,12 +844,13 @@ function renderGraphVisualization(graphUploadRequest, graphResponse, preserveEdi
     globalCostNames = costNames.length > 0 ? [...costNames] : [...(globalCostNames || [])];
 
     // Respect user's Edit Mode toggle switch state
-    isEditMode = editModeToggle.checked;
+    isEditMode = editModeToggle ? editModeToggle.checked : false;
     renderGlobalCostCatalogue();
 
     if (isEditMode) {
         saveGraphBtn.classList.remove("hidden");
         costCataloguePanel.classList.remove("hidden");
+        costCataloguePanel.classList.remove("collapsed");
         spEditSection.classList.remove("hidden");
         spDetails.classList.add("hidden");
         spEmptyState.classList.add("hidden");
@@ -1569,6 +1588,7 @@ function toggleEditMode() {
     if (isEditMode) {
         saveGraphBtn.classList.remove("hidden");
         costCataloguePanel.classList.remove("hidden");
+        costCataloguePanel.classList.remove("collapsed");
         spDetails.classList.add("hidden");
         spEmptyState.classList.add("hidden");
         spEditSection.classList.remove("hidden");
@@ -1584,7 +1604,12 @@ function toggleEditMode() {
         }
     } else {
         saveGraphBtn.classList.add("hidden");
-        costCataloguePanel.classList.add("hidden");
+        // In view mode, keep cost catalogue visible if cost parameters exist
+        if (globalCostNames && globalCostNames.length > 0) {
+            costCataloguePanel.classList.remove("hidden");
+        } else {
+            costCataloguePanel.classList.add("hidden");
+        }
         spEditSection.classList.add("hidden");
         if (calcPathsBtn) calcPathsBtn.classList.remove("hidden");
         if (spViewTabs) spViewTabs.classList.remove("hidden");
@@ -1596,44 +1621,82 @@ function toggleEditMode() {
             spDetails.classList.add("hidden");
         }
     }
+    // Re-render cost catalogue to immediately toggle delete buttons & add button
+    renderGlobalCostCatalogue();
     lucide.createIcons();
 }
 
 function renderGlobalCostCatalogue() {
-    if (!globalCostList) return;
-    globalCostList.innerHTML = "";
-    
-    const countBadge = document.getElementById('cost-catalogue-count');
-    if (countBadge) {
-        countBadge.textContent = globalCostNames ? globalCostNames.length : 0;
+    // 1. Floating Cost Catalogue Card on Canvas
+    if (globalCostList) {
+        globalCostList.innerHTML = "";
+        
+        const countBadge = document.getElementById('cost-catalogue-count');
+        if (countBadge) {
+            countBadge.textContent = globalCostNames ? globalCostNames.length : 0;
+        }
+
+        const addBtn = document.getElementById('add-cost-dim-btn');
+        if (addBtn) {
+            if (isEditMode) addBtn.classList.remove('hidden');
+            else addBtn.classList.add('hidden');
+        }
+
+        const addBottomBtn = document.getElementById('add-cost-dim-bottom-btn');
+        if (addBottomBtn) {
+            if (isEditMode) addBottomBtn.classList.remove('hidden');
+            else addBottomBtn.classList.add('hidden');
+        }
+
+        if (!globalCostNames || globalCostNames.length === 0) {
+            globalCostList.innerHTML = "<span class=\"text-sm text-gray-400\" style=\"padding: 0.5rem;\">No cost parameters added.</span>";
+        } else {
+            globalCostNames.forEach((cost, idx) => {
+                const div = document.createElement("div");
+                div.className = "cost-item";
+                div.innerHTML = `
+                    <span>${cost}</span>
+                    <button type="button" class="cost-delete-btn ${isEditMode ? '' : 'hidden'}" title="Remove parameter '${cost}' globally" onclick="event.preventDefault(); event.stopPropagation(); window.removeGlobalCostDimension(${idx})">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                `;
+                globalCostList.appendChild(div);
+            });
+        }
     }
 
-    const addBtn = document.getElementById('add-cost-dim-btn');
-    if (addBtn) {
-        if (isEditMode) addBtn.classList.remove('hidden');
-        else addBtn.classList.add('hidden');
+    // 2. Side Panel Inspector Cost Parameters Section (Edit Mode)
+    const spCostList = document.getElementById('sp-cost-parameters-list');
+    const spCostCountBadge = document.getElementById('sp-cost-count-badge');
+    if (spCostCountBadge) {
+        spCostCountBadge.textContent = globalCostNames ? globalCostNames.length : 0;
+    }
+    if (spCostList) {
+        spCostList.innerHTML = "";
+        if (!globalCostNames || globalCostNames.length === 0) {
+            spCostList.innerHTML = "<span class=\"text-sm text-gray-400\" style=\"padding: 0.5rem;\">No cost parameters defined. Click '+ Add' to create one.</span>";
+        } else {
+            globalCostNames.forEach((cost, idx) => {
+                const div = document.createElement("div");
+                div.className = "sp-cost-manage-item";
+                div.innerHTML = `
+                    <span class="sp-cost-manage-name">${cost}</span>
+                    <button type="button" class="cost-delete-btn" title="Delete parameter '${cost}' globally" onclick="event.preventDefault(); event.stopPropagation(); window.removeGlobalCostDimension(${idx})">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                `;
+                spCostList.appendChild(div);
+            });
+        }
     }
 
-    if (!globalCostNames || globalCostNames.length === 0) {
-        globalCostList.innerHTML = "<span class=\"text-sm text-gray-400\" style=\"padding: 0.5rem;\">No cost parameters added.</span>";
-        return;
-    }
-    globalCostNames.forEach((cost, idx) => {
-        const div = document.createElement("div");
-        div.className = "cost-item";
-        div.innerHTML = `
-            <span>${cost}</span>
-            <button class="icon-tool-btn danger-outline btn-sm ${isEditMode ? '' : 'hidden'}" title="Remove ${cost}" onclick="removeGlobalCostDimension(${idx})">
-                <i data-lucide="trash-2"></i>
-            </button>
-        `;
-        globalCostList.appendChild(div);
-    });
     lucide.createIcons();
 }
 
 function toggleCostCatalogue(e) {
     if (e && e.target && e.target.closest('#add-cost-dim-btn')) return;
+    if (e && e.target && e.target.closest('.cost-delete-btn')) return;
+    if (e && e.target && e.target.closest('.danger-outline')) return;
     if (!costCataloguePanel) return;
     costCataloguePanel.classList.toggle('collapsed');
 }
@@ -1656,25 +1719,76 @@ function addGlobalCostDimension() {
 }
 
 window.removeGlobalCostDimension = function(idx) {
-    if (confirm(`Remove cost dimension "${globalCostNames[idx]}"? This will delete it from all nodes and edges.`)) {
+    if (idx < 0 || idx >= globalCostNames.length) return;
+    const costNameToRemove = globalCostNames[idx];
+    if (confirm(`Remove cost parameter "${costNameToRemove}"? This will delete it from all nodes and edges across the graph.`)) {
         globalCostNames.splice(idx, 1);
         hasStructuralChanges = true;
+        
+        // Remove from all active nodes in activeGraphData
+        if (activeGraphData && activeGraphData.nodes) {
+            activeGraphData.nodes.forEach(n => {
+                if (n.cost) delete n.cost[costNameToRemove];
+                if (n.nodeCost && n.nodeCost.costVector) delete n.nodeCost.costVector[costNameToRemove];
+            });
+        }
+        // Remove from all active edges in activeGraphData
+        if (activeGraphData && activeGraphData.edges) {
+            activeGraphData.edges.forEach(e => {
+                if (e.cost) delete e.cost[costNameToRemove];
+                if (e.edgeCost && e.edgeCost.costVector) delete e.edgeCost.costVector[costNameToRemove];
+            });
+        }
+        
+        if (activeGraphData) {
+            activeGraphData.costNames = [...globalCostNames];
+        }
+        
+        // Update header pill
+        if (gvCostDimensions && gvCostPill) {
+            if (globalCostNames.length > 0) {
+                gvCostDimensions.textContent = `${globalCostNames.length} Parameter${globalCostNames.length > 1 ? 's' : ''}`;
+                gvCostPill.classList.remove('hidden');
+            } else {
+                gvCostPill.classList.add('hidden');
+            }
+        }
+        
         renderGlobalCostCatalogue();
+        
         if (selectedElement) {
             if (selectedElement.source) inspectEdge(selectedElement);
             else inspectNode(selectedElement);
         }
+        
+        showToast(`Removed parameter "${costNameToRemove}". Click "Save Changes" to persist.`, "info");
+    }
+};
+
+window.removeGlobalCostDimensionByName = function(name) {
+    const idx = globalCostNames.indexOf(name);
+    if (idx !== -1) {
+        window.removeGlobalCostDimension(idx);
     }
 };
 
 function renderEditCostGrid(costObj, container, type) {
     container.innerHTML = "";
+    if (!globalCostNames || globalCostNames.length === 0) {
+        container.innerHTML = "<span class='text-sm text-gray-400'>No cost parameters defined.</span>";
+        return;
+    }
     globalCostNames.forEach(costName => {
-        const val = costObj[costName] || 0;
+        const val = (costObj && costObj[costName] !== undefined) ? costObj[costName] : 0;
         const div = document.createElement("div");
         div.className = "cost-input-wrap";
         div.innerHTML = `
-            <label>${costName}</label>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                <label style="margin: 0; font-weight: 500;">${costName}</label>
+                <button type="button" class="cost-delete-btn" title="Delete parameter '${costName}' globally" onclick="event.preventDefault(); event.stopPropagation(); window.removeGlobalCostDimensionByName('${costName}')">
+                    <i data-lucide="trash-2"></i>
+                </button>
+            </div>
             <input type="number" step="any" class="glass-input-sm" value="${val}" data-cost="${costName}">
         `;
         const input = div.querySelector("input");
@@ -1684,6 +1798,7 @@ function renderEditCostGrid(costObj, container, type) {
         });
         container.appendChild(div);
     });
+    lucide.createIcons();
 }
 
 function updateActiveElement() {
@@ -2355,5 +2470,107 @@ function escapeHtml(str) {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
+}
+
+// ==========================================
+// AI Terminal Event Listeners & Logic
+// ==========================================
+
+if (createAiGraphBtn) {
+    createAiGraphBtn.addEventListener('click', () => {
+        // Clear graph data
+        currentGraphId = null;
+        currentGraph = null;
+        activeGraphData = null;
+        
+        // Transition to Graph View explicitly WITHOUT loading a graph
+        dashboardView.classList.add('hidden');
+        dashboardView.classList.remove('active');
+        graphView.classList.remove('hidden');
+        graphView.classList.add('active');
+        graphViewLoading.classList.add('hidden');
+        
+        // Setup empty visual state
+        if (gvGraphName) gvGraphName.innerText = 'New AI Graph';
+        if (gvGraphId) gvGraphId.innerText = 'ID: -';
+        if (gvNodeCount) gvNodeCount.innerText = '0';
+        if (gvEdgeCount) gvEdgeCount.innerText = '0';
+        if (gvCostPill) gvCostPill.classList.add('hidden');
+        
+        // Clear the SVG
+        d3.select('#graph-svg').selectAll('*').remove();
+        
+        aiChatTerminal.classList.remove('hidden');
+        if (aiPromptInput) {
+            aiPromptInput.value = '';
+            aiPromptInput.focus();
+        }
+    });
+}
+
+if (closeAiTerminalBtn) {
+    closeAiTerminalBtn.addEventListener('click', () => {
+        aiChatTerminal.classList.add('hidden');
+    });
+}
+
+if (aiErrorCloseBtn) {
+    aiErrorCloseBtn.addEventListener('click', () => {
+        aiErrorModal.classList.add('hidden');
+    });
+}
+
+if (aiGenerateBtn) {
+    aiGenerateBtn.addEventListener('click', async () => {
+        const prompt = aiPromptInput.value.trim();
+        if (!prompt) return;
+
+        // Set loading state
+        aiGenerateBtn.disabled = true;
+        const originalText = aiGenerateBtnText.innerText;
+        aiGenerateBtnText.innerText = 'Generating...';
+
+        try {
+            const payload = {
+                prompt: prompt,
+                userId: (currentUser && currentUser.userId) ? currentUser.userId : null
+            };
+            
+            // If currentGraph has an ID, it means we are updating
+            if (currentGraph && currentGraph.id) {
+                payload.graphId = currentGraph.id;
+                payload.currentGraphJson = JSON.stringify(currentGraph);
+            }
+
+            const response = await fetch('/workflow-engine/ai/createAIGraph', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (data.objErrorDetails && data.objErrorDetails.errorCode !== "0") {
+                throw data.objErrorDetails;
+            }
+
+            // Success: Load graph and close terminal
+            aiChatTerminal.classList.add('hidden');
+            currentGraph = data.objGraphUploadRequest; // Set the new graph
+            renderGraphVisualization(currentGraph, data, false);
+            fetchUserGraphs(); // Refresh dashboard list in background
+
+        } catch (error) {
+            console.error('[AI Generation Error]', error);
+            const msg = 'Service is currently unavailable or failed to process the request. Please check the network tab for details.';
+            if (aiErrorMessage) aiErrorMessage.innerText = msg;
+            if (aiErrorModal) aiErrorModal.classList.remove('hidden');
+        } finally {
+            aiGenerateBtn.disabled = false;
+            aiGenerateBtnText.innerText = originalText;
+        }
+    });
 }
 

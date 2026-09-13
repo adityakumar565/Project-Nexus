@@ -713,6 +713,128 @@ body {
 }
 
 /* Glass Pill Toolbar for Zoom */
+
+/* AI Terminal - Full width at bottom */
+.ai-terminal {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 40px); /* Spread across bottom with margin */
+    max-width: 1200px;
+    z-index: 500;
+    padding: 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    border-radius: 12px;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.ai-terminal-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #d8b4fe;
+    font-weight: 600;
+}
+
+.ai-terminal-body {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end; /* Align generate button to the bottom of the textarea */
+}
+
+#ai-prompt-input {
+    flex-grow: 1; /* Take up all available space */
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    color: var(--text-primary);
+    font-family: inherit;
+    resize: vertical;
+    min-height: 60px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+#ai-prompt-input:focus {
+    border-color: rgba(168, 85, 247, 0.7);
+    box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
+}
+
+.ai-generate-btn {
+    height: 60px; /* Match min-height of textarea */
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, #a855f7 0%, #7e22ce 100%);
+    border: none;
+    color: white;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.ai-generate-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+}
+
+.ai-generate-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Purple Error Modal */
+.purple-error-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    background: rgba(30, 20, 50, 0.95);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(168, 85, 247, 0.5);
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 450px;
+    text-align: center;
+    box-shadow: 0 8px 32px 0 rgba(168, 85, 247, 0.3);
+}
+
+.ai-error-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #f87171; /* red icon */
+    margin-bottom: 16px;
+    justify-content: center;
+}
+
+.ai-error-header h3 {
+    color: #f3e8ff;
+    margin: 0;
+}
+
+#ai-error-message {
+    color: #e9d5ff;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+}
+
+.ai-error-subtext {
+    color: #c084fc;
+    font-size: 0.9rem;
+    margin-bottom: 24px;
+}
+
 .glass-pill {
     display: inline-flex;
     align-items: center;
@@ -750,9 +872,20 @@ body {
     transform: scale(0.95);
 }
 
-.icon-tool-btn i {
+.icon-tool-btn i, .icon-tool-btn svg {
     width: 17px;
     height: 17px;
+}
+
+.icon-tool-btn.btn-xs {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+}
+
+.icon-tool-btn.btn-xs i, .icon-tool-btn.btn-xs svg {
+    width: 13px;
+    height: 13px;
 }
 
 .tool-divider {
@@ -1187,6 +1320,10 @@ body {
     display: none !important;
 }
 
+.cost-catalogue.collapsed #add-cost-dim-bottom-btn {
+    display: none !important;
+}
+
 .cost-header {
     display: flex;
     justify-content: space-between;
@@ -1420,6 +1557,71 @@ body {
     padding: 0.25rem 0.75rem;
     font-size: 0.75rem;
     height: auto;
+}
+
+/* Dedicated Cost Delete Button */
+.cost-delete-btn {
+    background: transparent;
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition);
+    padding: 0 !important;
+    margin: 0;
+    flex-shrink: 0;
+}
+.cost-delete-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ff6b6b;
+    border-color: #ff6b6b;
+    transform: scale(1.1);
+}
+.cost-delete-btn:active {
+    transform: scale(0.95);
+}
+.cost-delete-btn svg, .cost-delete-btn i {
+    width: 14px !important;
+    height: 14px !important;
+    color: var(--danger);
+    pointer-events: none;
+}
+
+/* Side Panel Cost Parameters Management List */
+.sp-cost-manage-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.sp-cost-manage-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 0.75rem;
+    transition: var(--transition);
+}
+
+.sp-cost-manage-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.16);
+}
+
+.sp-cost-manage-name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    text-transform: capitalize;
 }
 
 

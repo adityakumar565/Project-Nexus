@@ -3,12 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <title>DAG Engine - Glass UI</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=25">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="app.js?v=9" defer></script>
+    <script src="app.js?v=25" defer></script>
 </head>
 <body>
     <!-- Dynamic Background -->
@@ -88,12 +91,29 @@
                 </div>
             </header>
 
+            <!-- Delete Modal -->
+            <div id="delete-modal" class="modal hidden">
+                <div class="modal-content glass-card">
+                    <h3 id="delete-modal-title">Delete Graph?</h3>
+                    <p>Are you sure you want to delete this graph? This action cannot be undone.</p>
+                    <div class="modal-actions">
+                        <button class="glass-btn secondary" id="cancel-delete-btn">Cancel</button>
+                        <button class="glass-btn danger" id="confirm-delete-btn">Delete</button>
+                    </div>
+                </div>
+            </div>
+
+
+
             <main class="dashboard-content">
                 <div class="toolbar glass-panel">
                     <h3>Your Graphs</h3>
                     <div class="actions">
                         <button class="glass-btn success" id="create-graph-btn">
                             <i data-lucide="plus"></i> New Graph
+                        </button>
+                        <button class="glass-btn primary" id="create-ai-graph-btn">
+                            <i data-lucide="sparkles"></i> Create with AI
                         </button>
                         <button class="glass-btn danger" id="delete-selected-btn" disabled>
                             <i data-lucide="trash-2"></i> Delete Selected
@@ -181,6 +201,23 @@
             <main class="graph-viewport-container" id="graph-viewport-container">
                 <!-- SVG Graph Surface -->
                 <svg id="graph-svg"></svg>
+
+                <!-- AI Chat Terminal (Docked at Bottom) -->
+                <div id="ai-chat-terminal" class="glass-panel ai-terminal hidden">
+                    <div class="ai-terminal-header">
+                        <i data-lucide="sparkles"></i>
+                        <span>AI Graph Architect</span>
+                        <button class="icon-tool-btn ml-auto" id="close-ai-terminal-btn" title="Close AI Terminal">
+                            <i data-lucide="x"></i>
+                        </button>
+                    </div>
+                    <div class="ai-terminal-body">
+                        <textarea id="ai-prompt-input" placeholder="Describe your workflow or pipeline (e.g. 'Build an ETL pipeline from S3 to Snowflake with cost and time dimensions')..." rows="2"></textarea>
+                        <button id="ai-generate-btn" class="glass-btn primary ai-generate-btn">
+                            <i data-lucide="send"></i> <span id="ai-generate-btn-text">Generate</span>
+                        </button>
+                    </div>
+                </div>
 
                 <!-- Cost Parameters Catalogue (Top Left Expandable Card) -->
                 <div id="cost-catalogue-panel" class="glass-card cost-catalogue hidden">
@@ -415,6 +452,27 @@
                                     </button>
                                 </div>
                             </div>
+
+                            <div class="edit-section-divider"></div>
+
+                            <!-- Bottom: Cost Parameters Section in Side Panel -->
+                            <div class="edit-split-section" id="edit-costs-section">
+                                <div class="split-section-header">
+                                    <div class="split-header-left">
+                                        <i data-lucide="layers"></i>
+                                        <h4>Cost Parameters</h4>
+                                        <span class="badge" id="sp-cost-count-badge">0</span>
+                                    </div>
+                                    <div class="split-header-actions">
+                                        <button class="glass-btn primary btn-sm add-cost-parameter-trigger" id="sp-add-cost-btn" title="Add Cost Parameter" type="button">
+                                            <i data-lucide="plus"></i> Add
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="sp-cost-parameters-list" class="sp-cost-manage-list">
+                                    <!-- Populated dynamically: parameter name + Delete trash button -->
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </aside>
@@ -491,6 +549,21 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- AI Purple Error Modal -->
+    <div id="ai-error-modal" class="modal hidden purple-error-modal">
+        <div class="modal-content glass-card purple-glass-card">
+            <div class="ai-error-header">
+                <i data-lucide="alert-triangle"></i>
+                <h3>AI Generation Failed</h3>
+            </div>
+            <p id="ai-error-message">Service is currently unavailable. Please try again later.</p>
+            <p class="ai-error-subtext">View the browser console or network tab for the complete raw error trace.</p>
+            <div class="modal-actions">
+                <button class="glass-btn primary" id="ai-error-close-btn">Dismiss</button>
+            </div>
         </div>
     </div>
 
