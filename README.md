@@ -1,279 +1,240 @@
-# DAG Engine — High-Performance In-Memory Graph Processing System
+# DAG Engine — High-Performance In-Memory Workflow & Graph Processing System
 
 [![Java 25](https://img.shields.io/badge/Java-25%20Preview-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://openjdk.org/)
-[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.4.x-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.1.0-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16+-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Gemini AI](https://img.shields.io/badge/Google_Gemini-AI_Engine-4285F4?style=for-the-badge&logo=google-gemini&logoColor=white)](https://deepmind.google/technologies/gemini/)
 [![D3.js](https://img.shields.io/badge/D3.js-v7-F9A03C?style=for-the-badge&logo=d3.js&logoColor=white)](https://d3js.org/)
-[![Maven](https://img.shields.io/badge/Maven-3.9+-C71A36?style=for-the-badge&logo=apache-maven&logoColor=white)](https://maven.apache.org/)
+[![Swagger](https://img.shields.io/badge/OpenAPI-3.0_Swagger-85EA2D?style=for-the-badge&logo=swagger&logoColor=black)](http://localhost:8091/swagger-ui/index.html)
 
 ---
 
-## 🎬 UI Demo Video
+## 🎬 Live Interactive UI & Demo
 
 > ### 🎥 [**Watch the Interactive UI Walkthrough & Demo Video**](https://your-video-link-here)
 >
 > [![DAG Engine UI Demo](https://img.shields.io/badge/▶%20Play%20Video-DAG%20Engine%20Interactive%20UI%20Demo-blue?style=for-the-badge&logo=youtube&logoColor=white)](https://your-video-link-here)
 >
-> *Click the link above to watch the complete end-to-end demonstration showcasing graph visualization, real-time node & edge manipulation, multi-dimensional cost parameters, and automated DAG path calculation.*
+> *Watch the end-to-end walkthrough showcasing AI prompt-to-graph synthesis, live canvas manipulation, cycle validation (Error Code 69), multi-dimensional cost routing, and automated prefix-tree path calculation.*
 
 ---
 
 ## 📖 Overview
 
-**DAG Engine** is an enterprise-grade, stateful, in-memory **Directed Acyclic Graph (DAG)** processing and workflow framework built with **Java 25**, **Spring Boot**, **PostgreSQL**, and a modern **D3.js Glassmorphism Web Interface**.
+**DAG Engine** is an enterprise-grade, stateful, in-memory **Directed Acyclic Graph (DAG)** workflow and execution framework. Built with **Java 25**, **Spring Boot**, **PostgreSQL**, **Google Gemini AI**, and a modern **D3.js Glassmorphism Web Interface**, it models complex task pipelines, route optimization, and cost-aware execution.
 
-Traditional graph processing frameworks in Java suffer from severe object overhead, pointer indirection, and unpredictable Garbage Collection (GC) pauses during massive traversals. **DAG Engine** solves this by "baking" JSON graph topology requests into continuous, flat **primitive arrays** (`int[]`, `double[]`) that reside directly in memory for ultra-low latency graph algorithms, path calculations, and multi-dimensional cost evaluations.
+### The Problem It Solves
+Traditional Java graph libraries rely on deeply nested object graphs (`Map<Node, List<Edge>>`) that suffer from severe memory footprint overhead, cache misses, pointer indirection, and Garbage Collection (GC) pauses during massive traversals. Furthermore, uncontrolled cyclic graphs in recursive path explorers cause infinite traversal loops, resulting in immediate JVM `OutOfMemoryError: Java heap space` crashes.
 
----
-
-## ✨ Key Capabilities
-
-### 🎨 Modern Interactive Web UI
-- **Glassmorphism Design System**: Built with modern dark-mode aesthetic, vibrant cyan/blue glowing accents, micro-animations, and responsive layout.
-- **Dynamic D3.js Force Simulation**: Hardware-accelerated SVG graph canvas with continuous force layouts, drag-and-drop node pinning, dynamic zoom constraints, and instant "Fit to Screen" camera transforms.
-- **View Mode vs. Live Edit Mode**:
-  - **View Mode**: Safe inspection of nodes, edges, connections, and multi-dimensional cost breakdowns.
-  - **Edit Mode**: Real-time canvas editing with a split-view right inspector (Upper section for Node management, Lower section for Directed Edge management). Add, edit, or delete nodes and directed edges interactively.
-- **Dynamic Cost Parameters Catalogue**: Expandable top-left card displaying global cost metrics (e.g., `time`, `cost`, `latency`, `bandwidth`). Add new dimensions on the fly with automatic graph-wide node and edge parameter synchronization.
-- **Inline Graph Metadata Editing**: Click directly on the graph title in the header to open a modal for immediate graph name and description updates.
-- **Automated Path Calculation Engine**:
-  - Floating **"Calculate Paths"** trigger conveniently located at the bottom-left of the viewport (visible strictly in View Mode).
-  - Right slidable panel with an independent **Paths** tab displaying all computed routes as expandable cards (`Path 1`, `Path 2`, etc.).
-  - **Sequential Node & Edge Route Flow**: Expanding any path card displays the exact route taken ($$\text{Node A} \longrightarrow \text{Edge 1} \longrightarrow \text{Node B} \longrightarrow \text{Edge 2} \longrightarrow \text{Node C}$$).
-  - **Independent Multi-Expansion**: Expand multiple paths simultaneously for side-by-side route and cumulative cost comparison.
-  - **Interactive SVG Route Highlighting**: Hovering or expanding a path card illuminates the entire traversal on the SVG canvas with glowing halos while gently dimming unrelated topology.
-- **End-to-End Correlation Tracking**: Automatic generation of 27-digit sequential correlation IDs (`yyyyMMddHHmmssSSS` + 10-digit sequence) attached to HTTP headers and query params, logged to database tables for pinpoint API debugging.
+**DAG Engine** solves this by:
+1. **Compiling Topologies into Primitive Arrays**: Topologies are baked into contiguous flat arrays (`int[]`, `float[]`), eliminating object bloat and maximizing CPU cache locality.
+2. **Prefix-Tree Path Storage**: Paths from root to terminal nodes are calculated once and indexed via an array-backed prefix tree kernel.
+3. **Rigorous Cycle Detection & Memory Defense**: An $O(V + E)$ 3-color DFS cycle detector intercepts cycles *before* storage or traversal, safeguarding the heap and returning standardized **Error Code 69** validation payloads.
+4. **Natural Language AI Graph Synthesis**: Built-in Gemini AI integration that turns plain English workflow prompts into fully validated, multi-dimensional DAGs with automatic validation self-correction loops.
 
 ---
 
-### ⚡ Low-Latency Backend Architecture
-1. **Primitive Array Backing**: Graphs are compiled into contiguous flat primitive memory structures (`int[]`, `double[]`) based on pluggable internal representations (e.g., Adjacency Matrix, CSR).
-2. **Binary Disk Serialization**: Baked topologies are persisted as raw `.bin` files on disk for sub-millisecond deserialization and cache warm-up.
-3. **Active Memory Guards**: Thread-safe in-memory cache (`ConcurrentHashMap`) ensures graphs currently active in memory cannot be abruptly deleted from disk or the database (Error Code `2005`).
-4. **Relational Metadata with PostgreSQL**: Stores user associations, graph attributes, cycle validation status, and raw JSON payloads for historical recovery.
-5. **Pluggable Storage Architectures**: Extensible `GraphComponentManagerFactory` allows seamless switching between storage kernels (e.g., `ADJACENCY_V1`, Compressed Sparse Row).
+## ✨ Key Engineering Highlights
+
+### 🤖 1. AI-Powered Prompt-to-Graph Generation & Self-Correction Loop
+- **Natural Language Synthesis**: Enter any real-world workflow prompt (e.g. *"Design a CI/CD pipeline with build, test, staging, and deployment with time and failure risk costs"*).
+- **Self-Correction Engine**: If Gemini generates a schema that fails the engine's internal validation rules, the engine catches the exception and feeds the error trace back to Gemini in an automated reflection loop to self-repair the topology before saving.
+- **Dedicated Terminal Modal**: Embedded dark-mode purple glassmorphism prompt window with live animated progress states.
+
+### 🛡️ 2. DAG Cycle Detection & Heap Memory Protection (Error Code `69`)
+- **3-Color Depth-First Search (DFS)**: Classifies nodes into `UNVISITED (0)`, `VISITING (1)`, and `VISITED (2)` to detect back-edges, circular dependencies, self-loops, and multi-component cycles in $O(V + E)$ time.
+- **Zero Heap Exhaustion**: Intercepts cycles before executing the recursive path explorer, completely eliminating runaway recursion and `OutOfMemoryError: Java heap space`.
+- **Standardized Error Code 69**: Custom validation code returned to the client whenever DAG invariants are violated.
+- **Interactive UI Validation Modal**: Triggers a dedicated glassmorphism popup displaying the cycle error, Error Code 69 badge, and step-by-step guidance on breaking the circular loop.
+
+### 🧭 3. Sub-Millisecond Path Optimization Engine
+- **Prefix-Tree Traversal Kernel**: Pre-computes and indexes all valid paths from source to terminal (sink) nodes into a primitive-array-backed tree structure (`TreePathComponentStorage`).
+- **Multi-Dimensional Cost Evaluation**: Calculates cumulative costs across arbitrary concurrent dimensions (`time`, `cost`, `latency`, `impact`, etc.).
+- **Visual Path Highlighting**: Clicking any computed route illuminates the exact sequence of nodes and edges on the D3.js canvas with glowing neon halos while gently dimming unrelated topology.
+
+### 🎨 4. Modern Glassmorphism Web Interface
+- **D3.js v7 Canvas**: Hardware-accelerated SVG force simulation with zoom/pan constraints, drag-and-drop node pinning, and auto-centering "Fit to Screen".
+- **Resizable Inspector Side Panel**: Drag handle with custom width adjustments, double-click reset, toggle button, and `localStorage` persistence.
+- **Dynamic Cost Parameters Catalogue**: Dedicated section in the side panel to add or delete global cost dimensions on the fly with circular SVG action controls and horizontal overflow safety.
+- **End-to-End Tracing**: 27-digit sequential correlation IDs (`yyyyMMddHHmmssSSS` + 10-digit sequence) attached to every request and persisted to `logs.api_logs` for deep observability.
 
 ---
 
 ## 🏛️ System Architecture
 
-### Component Workflow
-
 ```mermaid
 flowchart TD
-    subgraph Frontend["Frontend Web UI (D3.js + Vanilla JS)"]
-        UI["Interactive Graph Canvas"]
-        Inspect["Split Inspector & Path Panel"]
-        CostCat["Cost Parameters Catalogue"]
+    subgraph Client["Client Tier (Vanilla JS + D3.js v7)"]
+        UI["Interactive Force Canvas"]
+        Insp["Resizable Split Inspector"]
+        ValModal["Error Code 69 Validation Modal"]
+        AITerm["AI Generation Terminal"]
     end
 
-    subgraph Controller["Spring Boot REST Layer"]
+    subgraph ControllerLayer["API Controller Layer"]
         GC["GraphController"]
         UC["UserController"]
-        Aspect["ApiLoggingAspect (Correlation ID)"]
+        AIC["AiGraphController"]
+        LogAspect["ApiLoggingAspect (Correlation Tracing)"]
     end
 
-    subgraph ServiceLayer["Service & Graph Implementation"]
-        GI["GraphImpl / GraphInterface"]
+    subgraph ServiceLayer["Core Domain & Service Layer"]
+        GI["GraphImpl"]
+        UI_Service["UserImpl"]
+        AIService["GeminiAiGraphServiceImpl"]
+        GUtil["GraphUtility (3-Color DFS Cycle Detector)"]
+    end
+
+    subgraph EngineKernels["Component Managers & Low-Level Kernels"]
         GCM["GraphComponentManager (In-Memory Cache)"]
+        GBridge["GraphBridge (Binary Serialization)"]
+        PCM["PathComponentManager"]
+        TreeStorage["TreePathComponentStorage (Prefix-Tree Kernel)"]
     end
 
-    subgraph StorageLayer["Persistence & Disk Kernels"]
-        PG[("PostgreSQL Database")]
-        BIN[("Binary Serialized (.bin) Storage")]
+    subgraph Persistence["Persistence & Storage Tier"]
+        DB[("PostgreSQL Database")]
+        DiskStorage[("Binary Files: graph_representation/*.bin")]
+        PathStorage[("Binary Files: path_representation/*.dat")]
     end
 
-    UI -->|"Upload / Update Graph JSON"| GC
-    UI -->|"Calculate Paths GET /{id}/paths"| GC
-    GC --> Aspect
-    GC --> GI
-    GI -->|"Save Metadata"| PG
-    GI -->|"Bake Primitive Arrays"| GCM
-    GCM -->|"Write / Read .bin"| BIN
-    GCM -->|"Cache In-Memory"| GCM
-    GCM -->|"Compute Route & Costs"| GI
-    GI -->|"Return Paths & Graph Data"| UI
-```
-
----
-
-### Graph Lifecycle State Machine
-
-```mermaid
-stateDiagram-v2
-    [*] --> DB_Stored: Upload & Bake Graph (/upload)
-    DB_Stored --> In_Memory_Active: Load Graph (/get)
-    In_Memory_Active --> DB_Stored: Close Graph (/close)
-    DB_Stored --> [*]: Delete Graph (/delete)
+    UI -->|"HTTP REST API"| ControllerLayer
+    AITerm -->|"Prompt Payload"| AIC
+    AIC --> AIService
+    AIService -->|"Auto-Correction Feedback"| GUtil
     
-    note right of In_Memory_Active
-        Delete Attempt is Rejected
-        Guarded by Active Cache (Code 2005)
-    end note
+    ControllerLayer --> LogAspect
+    ControllerLayer --> ServiceLayer
+    
+    GI -->|"1. Cycle Check (Code 69)"| GUtil
+    GUtil -- "Cycle Detected" --> ValModal
+    GUtil -- "Valid DAG" --> GCM
+    
+    GI -->|"2. Bake Primitive Topology"| GCM
+    GCM --> GBridge
+    GBridge --> DiskStorage
+    
+    GI -->|"3. Compute Paths"| PCM
+    PCM --> TreeStorage
+    TreeStorage --> PathStorage
+    
+    GI -->|"4. Persist Metadata & Logs"| DB
 ```
 
 ---
 
 ## 🛠️ Technology Stack
 
-| Layer | Technologies | Description |
+| Layer | Technologies | Role & Purpose |
 | :--- | :--- | :--- |
-| **Frontend** | HTML5, CSS3 Glassmorphism, Vanilla JS (ES6+) | Dependency-free, fast, custom-styled web UI |
-| **Visualization** | D3.js v7, Lucide Icons | Force-directed graphs, dynamic transforms, SVGs |
-| **Backend** | Java 25 (Preview Features), Spring Boot 3.4.x | High-throughput REST backend & in-memory engine |
-| **Database** | PostgreSQL 16+ | Relational metadata, raw JSON payloads, API logs |
-| **ORM & Data** | Spring Data JPA, Hibernate | Database entity mappings and repository operations |
-| **Build & Tooling** | Maven 3.9+, Maven Wrapper (`mvnw`) | Build automation, testing, and lifecycle management |
+| **Backend Framework** | **Java 25**, **Spring Boot 4.1.0** | Modern, high-throughput JVM REST backend with virtual thread capability |
+| **AI Integration** | **Google Gemini 2.5 Flash API** | Natural language workflow generation and self-correcting schema repair |
+| **Database & ORM** | **PostgreSQL 16+**, **Hibernate / JPA** | Relational metadata, raw graph JSONs, user profiles, and correlation API logs |
+| **Visualization** | **D3.js v7**, **Lucide Icons** | Dynamic force-directed SVG graphs, interactive zoom/pan, glowing path routes |
+| **Styling & UI** | **Vanilla CSS3 Glassmorphism** | Ultra-responsive dark theme with blur filters, CSS animations, zero CSS bloat |
+| **API Docs** | **OpenAPI 3.0 / Swagger UI** | Interactive, live API documentation and schema explorer |
+| **Build & Tooling** | **Maven 3.9+**, **Maven Wrapper (`mvnw`)** | Reproducible builds, dependency management, and automated test runners |
 
 ---
 
-## 🚀 End-to-End REST API Reference
+## 🚀 REST API Reference
 
-All endpoints are hosted under `/workflow-engine` and support automated correlation tracking via `X-Correlation-ID` header and `?correlationId=...` query parameters.
+Interactive Swagger documentation is available at [**http://localhost:8091/swagger-ui/index.html**](http://localhost:8091/swagger-ui/index.html).
+
+### 🤖 AI Graph Generation
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/workflow-engine/ai/generate` | Generates a validated DAG from a natural language prompt with self-correction. |
+
+### 🕸️ Graph Management & Lifecycle
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/workflow-engine/graphs/upload` | Validates DAG acyclicity, compiles topology, and stores in PostgreSQL & disk. |
+| `POST` | `/workflow-engine/graphs/update` | Updates metadata (`S`) or recalculates topology (`C`) with cycle detection (Code 69). |
+| `POST` | `/workflow-engine/graphs/get` | Loads graph into active in-memory cache and returns full visualization payload. |
+| `POST` | `/workflow-engine/graphs/close` | Evicts graph from active in-memory cache to reclaim JVM heap. |
+| `POST` | `/workflow-engine/graphs/delete` | Removes graph from DB and disk (guarded against deleting active in-memory graphs). |
+
+### 🧭 Path & Cost Routing
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/workflow-engine/graphs/paths` | Calculates all valid terminal routes with cumulative multi-dimensional costs. |
+| `GET` | `/workflow-engine/graphs/{id}/paths`| Quick route calculation for a specific graph by ID. |
 
 ### 👤 User Management
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `POST` | `/workflow-engine/user/create` | Register a new user (`userName`, `userPassword`). |
+| `POST` | `/workflow-engine/user/create` | Register a new user profile. |
 | `POST` | `/workflow-engine/user/validate` | Authenticate user credentials. |
-| `POST` | `/workflow-engine/user/get` | Retrieve user profile along with their full graph catalogue. |
-| `POST` | `/workflow-engine/user/delete` | Delete user and their associated graph resources. |
-
-### 🕸️ Graph Lifecycle & Operations
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `POST` | `/workflow-engine/graphs/upload` | Upload a new JSON graph DAG, validate acyclicity, and bake to disk. |
-| `POST` | `/workflow-engine/graphs/get` | Load a graph into in-memory cache and return UI-ready payload. |
-| `POST` | `/workflow-engine/graphs/update` | Update graph structure (`C`: Complex) or metadata (`S`: Simple). |
-| `POST` | `/workflow-engine/graphs/close` | Evict graph from in-memory cache to reclaim JVM heap memory. |
-| `POST` | `/workflow-engine/graphs/delete` | Safely remove graph from DB and disk (fails if graph is active). |
-
-### 🧭 Path Calculation
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/workflow-engine/graphs/{graphId}/paths` | Calculates all valid routes from start to terminal nodes with cumulative costs. |
-| `POST` | `/workflow-engine/graphs/paths` | Calculate paths by providing explicit `GraphMetaData`. |
-
-#### Sample Path Response:
-```json
-{
-  "graphId": 24,
-  "graphName": "Multi Path Test DAG",
-  "totalPaths": 2,
-  "paths": [
-    {
-      "nodeSequence": [
-        { "id": 1, "name": "Source Node" },
-        { "id": 3, "name": "Route Beta" },
-        { "id": 4, "name": "Destination Node" }
-      ],
-      "pathCosts": { "time": 9.0, "cost": 68.0 }
-    },
-    {
-      "nodeSequence": [
-        { "id": 1, "name": "Source Node" },
-        { "id": 2, "name": "Route Alpha" },
-        { "id": 4, "name": "Destination Node" }
-      ],
-      "pathCosts": { "time": 14.0, "cost": 62.0 }
-    }
-  ],
-  "objErrorDetails": { "errorCode": "0", "errorMessage": "SUCCESS" }
-}
-```
+| `POST` | `/workflow-engine/user/get` | Fetch user profile along with their full graph catalogue. |
+| `POST` | `/workflow-engine/user/delete` | Delete user and cascade cleanup of associated graphs. |
 
 ---
 
-## 💻 Getting Started
+## 🧪 Testing & Validation
 
-### Prerequisites
-- **JDK 25** (with preview features enabled)
-- **PostgreSQL 15+** installed and running
-- **Git**
-
-### Database Setup
-Create the PostgreSQL database and configure your connection:
-```sql
-CREATE DATABASE dag_engine_db;
-```
-
-Update your credentials in `src/main/resources/application.properties`:
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/dag_engine_db
-spring.datasource.username=postgres
-spring.datasource.password=your_password
-spring.jpa.hibernate.ddl-auto=update
-```
-
-### Running Locally
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/adityakumar565/Project-Nexus.git
-   cd Project-Nexus
-   ```
-
-2. **Start the Spring Boot application**:
-   - **On Windows**:
-     ```powershell
-     .\mvnw.cmd spring-boot:run
-     ```
-   - **On Linux / macOS**:
-     ```bash
-     ./mvnw spring-boot:run
-     ```
-
-3. **Open the Web Application**:
-   Navigate to [**http://localhost:8091**](http://localhost:8091) in your modern browser.
-
----
-
-## 🧪 Testing
-
-Execute the comprehensive end-to-end integration and unit test suite:
+Execute the unit and integration test suite:
 ```bash
 ./mvnw test
 ```
 
-The test suite validates:
-- Complete user registration and session lifecycle.
-- Graph upload, acyclicity validation, and binary serialization.
-- Cache hit vs. cache miss performance verification.
-- Active memory deletion rejection guards (Error Code `2005`).
-- Multi-dimensional pathfinding and cost summation accuracy.
+### Verified Test Cases:
+- **`GraphUtilityTest`**: Validates linear DAGs, diamond DAGs, self-loops, 2-node cycles, multi-node loops, and disconnected cyclic graphs.
+- **`CorrelationIdGeneratorTest`**: Verifies 27-digit chronological timestamp + sequence uniqueness.
+- **Active Memory Guard**: Ensures active in-memory graphs cannot be prematurely deleted from storage.
+- **Path Tree Correctness**: Ensures path cost summation exactly matches manual matrix verification.
 
 ---
 
-## 📁 Repository Structure
+## 💻 Getting Started Locally
 
+### Prerequisites
+- **JDK 25** (with preview features enabled)
+- **PostgreSQL 16+**
+- **Git**
+
+### 1. Database Setup
+```sql
+CREATE DATABASE dag_nexus_db;
 ```
-dag-engine/
-├── src/
-│   ├── main/
-│   │   ├── java/com/workflow/dag_engine/
-│   │   │   ├── aop/                 # API Logging Aspect & Correlation ID
-│   │   │   ├── componentManager/    # In-memory graph cache & storage factory
-│   │   │   ├── config/              # Spring application & Swagger configurations
-│   │   │   ├── controller/          # REST Controllers (User, Graph)
-│   │   │   ├── impl/                # Core domain and service implementations
-│   │   │   ├── interfaces/          # Service and kernel contracts
-│   │   │   ├── models/              # DTOs, Entities, Path representations
-│   │   │   └── persistence/         # JPA Repositories
-│   │   └── resources/
-│   │       ├── application.properties
-│   │       └── static/              # Interactive UI Web Assets
-│   │           ├── app.js           # Client-side state, D3 graph, & path logic
-│   │           ├── index.html       # Single-page application markup
-│   │           └── styles.css       # Glassmorphism design system & micro-animations
-│   └── test/java/                   # Integration and unit tests
-├── graph_representation/            # Serialized binary graph storage (.bin)
-├── path_representation/             # Serialized path compute representations
-├── pom.xml                          # Maven build definition
-└── README.md                        # Documentation
+
+### 2. Configure Environment
+Copy the example environment template:
+```bash
+cp .env.example .env
 ```
+Or configure your private API keys in `src/main/resources/application-local.properties` (automatically ignored by Git).
+
+### 3. Run the Server
+- **On Windows (PowerShell)**:
+  ```powershell
+  .\mvnw.cmd spring-boot:run
+  ```
+- **On Linux / macOS**:
+  ```bash
+  ./mvnw spring-boot:run
+  ```
+
+### 4. Access the Application
+Open [**http://localhost:8091**](http://localhost:8091) in your browser. Default test credentials:
+- **Username**: `Aditya`
+- **Password**: `Kumar`
+
+---
+
+## 🗺️ Upcoming Roadmap (Next Sprints)
+
+1. **Cost-Cutoff Traversal Engine**:
+   - Introduce a new pluggable `PathCutoffComponentManager` and `PathCutoffUtilityImpl`.
+   - Support cyclic workflows bounded by budget/cutoff thresholds (cycles naturally terminate once cumulative cost exceeds the budget).
+2. **Role-Based Access Control (RBAC)**:
+   - Introduce user roles (`ADMIN`, `OPERATOR`, `VIEWER`).
+   - Secure REST endpoints using Spring Security `@PreAuthorize` and adapt UI controls dynamically based on user privileges.
+3. **Containerization & CI/CD Pipeline**:
+   - Multi-stage Docker image and `docker-compose.yml` for zero-install evaluation.
+   - GitHub Actions workflow for automated PR testing and security scanning.
 
 ---
 
 ## 📄 License
-
 This project is licensed under the Apache-2.0 License.
