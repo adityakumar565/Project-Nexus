@@ -240,6 +240,77 @@ if (resetLayoutBtn) resetLayoutBtn.addEventListener('click', resetGraphLayout);
 closeSidePanelBtn.addEventListener('click', closeSidePanel);
 reopenSidePanelBtn.addEventListener('click', openSidePanel);
 
+// Side Panel Horizontal Resizing Logic
+const spResizer = document.getElementById('sp-resizer');
+const expandWidthBtn = document.getElementById('expand-width-btn');
+const DEFAULT_PANEL_WIDTH = 360;
+const WIDE_PANEL_WIDTH = 540;
+
+if (graphSidePanel) {
+    const savedWidth = localStorage.getItem('dag_side_panel_width');
+    if (savedWidth) {
+        const parsed = parseInt(savedWidth, 10);
+        if (parsed >= 300 && parsed <= window.innerWidth * 0.85) {
+            graphSidePanel.style.width = `${parsed}px`;
+        }
+    }
+}
+
+if (spResizer && graphSidePanel) {
+    let isResizing = false;
+    let startX = 0;
+    let startWidth = 0;
+
+    spResizer.addEventListener('mousedown', (e) => {
+        isResizing = true;
+        startX = e.clientX;
+        startWidth = graphSidePanel.getBoundingClientRect().width;
+        graphSidePanel.classList.add('resizing');
+        spResizer.classList.add('active');
+        document.body.style.cursor = 'col-resize';
+        e.preventDefault();
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isResizing) return;
+        const deltaX = startX - e.clientX; // Dragging left increases width
+        let newWidth = startWidth + deltaX;
+        const minWidth = 300;
+        const maxWidth = Math.min(window.innerWidth * 0.85, 900);
+        if (newWidth < minWidth) newWidth = minWidth;
+        if (newWidth > maxWidth) newWidth = maxWidth;
+        graphSidePanel.style.width = `${newWidth}px`;
+    });
+
+    window.addEventListener('mouseup', () => {
+        if (!isResizing) return;
+        isResizing = false;
+        graphSidePanel.classList.remove('resizing');
+        spResizer.classList.remove('active');
+        document.body.style.cursor = '';
+        if (graphSidePanel.style.width) {
+            localStorage.setItem('dag_side_panel_width', parseInt(graphSidePanel.style.width, 10));
+        }
+    });
+
+    spResizer.addEventListener('dblclick', () => {
+        const currentWidth = graphSidePanel.getBoundingClientRect().width;
+        const targetWidth = Math.abs(currentWidth - DEFAULT_PANEL_WIDTH) < 30 ? WIDE_PANEL_WIDTH : DEFAULT_PANEL_WIDTH;
+        graphSidePanel.style.width = `${targetWidth}px`;
+        localStorage.setItem('dag_side_panel_width', targetWidth);
+    });
+}
+
+if (expandWidthBtn && graphSidePanel) {
+    expandWidthBtn.addEventListener('click', () => {
+        const currentWidth = graphSidePanel.getBoundingClientRect().width;
+        const targetWidth = Math.abs(currentWidth - DEFAULT_PANEL_WIDTH) < 30 ? WIDE_PANEL_WIDTH : DEFAULT_PANEL_WIDTH;
+        graphSidePanel.style.width = `${targetWidth}px`;
+        localStorage.setItem('dag_side_panel_width', targetWidth);
+        expandWidthBtn.title = targetWidth > DEFAULT_PANEL_WIDTH ? "Reset inspector width" : "Expand inspector width";
+    });
+}
+
 // Edit Mode Listeners
 editModeToggle.addEventListener('change', toggleEditMode);
 saveGraphBtn.addEventListener('click', saveGraphChanges);
@@ -1655,8 +1726,8 @@ function renderGlobalCostCatalogue() {
                 const div = document.createElement("div");
                 div.className = "cost-item";
                 div.innerHTML = `
-                    <span>${cost}</span>
-                    <button type="button" class="cost-delete-btn ${isEditMode ? '' : 'hidden'}" title="Remove parameter '${cost}' globally" onclick="event.preventDefault(); event.stopPropagation(); window.removeGlobalCostDimension(${idx})">
+                    <span title="${escapeHtml(cost)}">${escapeHtml(cost)}</span>
+                    <button type="button" class="cost-delete-btn ${isEditMode ? '' : 'hidden'}" title="Remove parameter '${escapeHtml(cost)}' globally" onclick="event.preventDefault(); event.stopPropagation(); window.removeGlobalCostDimension(${idx})">
                         <i data-lucide="trash-2"></i>
                     </button>
                 `;
@@ -1680,8 +1751,8 @@ function renderGlobalCostCatalogue() {
                 const div = document.createElement("div");
                 div.className = "sp-cost-manage-item";
                 div.innerHTML = `
-                    <span class="sp-cost-manage-name">${cost}</span>
-                    <button type="button" class="cost-delete-btn" title="Delete parameter '${cost}' globally" onclick="event.preventDefault(); event.stopPropagation(); window.removeGlobalCostDimension(${idx})">
+                    <span class="sp-cost-manage-name" title="${escapeHtml(cost)}">${escapeHtml(cost)}</span>
+                    <button type="button" class="cost-delete-btn" title="Delete parameter '${escapeHtml(cost)}' globally" onclick="event.preventDefault(); event.stopPropagation(); window.removeGlobalCostDimension(${idx})">
                         <i data-lucide="trash-2"></i>
                     </button>
                 `;
@@ -1783,13 +1854,13 @@ function renderEditCostGrid(costObj, container, type) {
         const div = document.createElement("div");
         div.className = "cost-input-wrap";
         div.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
-                <label style="margin: 0; font-weight: 500;">${costName}</label>
-                <button type="button" class="cost-delete-btn" title="Delete parameter '${costName}' globally" onclick="event.preventDefault(); event.stopPropagation(); window.removeGlobalCostDimensionByName('${costName}')">
+            <div class="cost-input-label-group" title="${escapeHtml(costName)}">
+                <button type="button" class="cost-delete-btn" title="Delete parameter '${escapeHtml(costName)}' globally" onclick="event.preventDefault(); event.stopPropagation(); window.removeGlobalCostDimensionByName('${escapeHtml(costName)}')">
                     <i data-lucide="trash-2"></i>
                 </button>
+                <label>${escapeHtml(costName)}</label>
             </div>
-            <input type="number" step="any" class="glass-input-sm" value="${val}" data-cost="${costName}">
+            <input type="number" step="any" class="glass-input-sm" value="${val}" data-cost="${escapeHtml(costName)}">
         `;
         const input = div.querySelector("input");
         input.addEventListener("input", (e) => {

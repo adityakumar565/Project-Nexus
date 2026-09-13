@@ -8,10 +8,10 @@
     <meta http-equiv="Expires" content="0" />
     <title>DAG Engine - Glass UI</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=25">
+    <link rel="stylesheet" href="styles.css?v=26">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="app.js?v=25" defer></script>
+    <script src="app.js?v=26" defer></script>
 </head>
 <body>
     <!-- Dynamic Background -->
@@ -252,14 +252,21 @@
 
                 <!-- Collapsible Right Data Panel (Inspector Side Menu) -->
                 <aside id="graph-side-panel" class="graph-side-panel">
+                    <!-- Resizer drag handle -->
+                    <div class="side-panel-resizer" id="sp-resizer" title="Drag to resize inspector width (Double-click to expand/reset)"></div>
                     <div class="side-panel-header">
                         <div class="side-panel-title-wrap">
                             <i data-lucide="info" id="sp-header-icon"></i>
                             <h3 id="sp-panel-title">Inspector</h3>
                         </div>
-                        <button class="icon-tool-btn" id="close-side-panel-btn" title="Close Panel">
-                            <i data-lucide="x"></i>
-                        </button>
+                        <div class="side-panel-header-actions">
+                            <button class="icon-tool-btn" id="expand-width-btn" title="Expand/Reset inspector width" type="button">
+                                <i data-lucide="maximize-2"></i>
+                            </button>
+                            <button class="icon-tool-btn" id="close-side-panel-btn" title="Close Panel" type="button">
+                                <i data-lucide="x"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- View Mode Tab Switcher (Inspector vs Paths) -->

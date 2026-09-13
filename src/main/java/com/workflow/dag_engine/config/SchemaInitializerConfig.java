@@ -42,6 +42,9 @@ public class SchemaInitializerConfig {
                         CREATE INDEX IF NOT EXISTS idx_api_logs_start_time ON logs.api_logs(start_time);
                     """;
             stmt.execute(createTableSql);
+            stmt.execute("GRANT ALL ON SCHEMA logs TO dag_engine_user;");
+            stmt.execute("GRANT ALL ON ALL TABLES IN SCHEMA logs TO dag_engine_user;");
+            stmt.execute("GRANT ALL ON ALL SEQUENCES IN SCHEMA logs TO dag_engine_user;");
 
             log.info("SchemaInitializerConfig: Verified schemas and table logs.api_logs exist.");
         } catch (Exception e) {

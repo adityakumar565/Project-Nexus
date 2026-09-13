@@ -35,3 +35,11 @@ build/
 ### Data and Logs ###
 graph_representation/
 log4jLog/
+
+### Secrets & Local Environment Overrides ###
+.env
+*.env
+application-local.properties
+*local.properties
+*secrets.properties
+src/main/resources/application-local.properties
