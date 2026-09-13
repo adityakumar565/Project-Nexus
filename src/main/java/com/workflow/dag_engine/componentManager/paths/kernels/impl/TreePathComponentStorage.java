@@ -68,6 +68,20 @@ public class TreePathComponentStorage implements PathStorageInterface, Serializa
         this.leafIds.add(treeId);
     }
 
+    /**
+     * Checks whether a graphNodeId is already an ancestor along the path branch ending at treeId.
+     */
+    public boolean containsAncestor(int treeId, int graphNodeId) {
+        int curr = treeId;
+        while (curr != -1 && curr < size) {
+            if (graphNodeIds[curr] == graphNodeId) {
+                return true;
+            }
+            curr = parentIds[curr];
+        }
+        return false;
+    }
+
     private void expandCapacity() {
         int newCap = graphNodeIds.length * 2;
         graphNodeIds = Arrays.copyOf(graphNodeIds, newCap);

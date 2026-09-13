@@ -148,6 +148,12 @@ const newCostParamDefault = document.getElementById('new-cost-param-default');
 const cancelCostModalBtn = document.getElementById('cancel-cost-modal-btn');
 const closeCostModalBtn = document.getElementById('close-cost-modal-btn');
 
+// Validation Error Modal DOM Elements (Error Code 69 / Cycle & DAG Validation)
+const validationModal = document.getElementById('validation-error-modal');
+const validationModalMessage = document.getElementById('validation-modal-message');
+const closeValidationModalBtn = document.getElementById('close-validation-modal-btn');
+const validationModalDismissBtn = document.getElementById('validation-modal-dismiss-btn');
+
 // Path Calculation DOM Elements
 const calcPathsBtn = document.getElementById('calc-paths-btn');
 const spViewTabs = document.getElementById('sp-view-tabs');
@@ -356,7 +362,19 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && graphDetailsModal && !graphDetailsModal.classList.contains('hidden')) {
         closeGraphDetailsModal();
     }
+    if (e.key === 'Escape' && validationModal && !validationModal.classList.contains('hidden')) {
+        closeValidationErrorModal();
+    }
 });
+
+// Validation Error Modal Listeners
+if (closeValidationModalBtn) closeValidationModalBtn.addEventListener('click', closeValidationErrorModal);
+if (validationModalDismissBtn) validationModalDismissBtn.addEventListener('click', closeValidationErrorModal);
+if (validationModal) {
+    validationModal.addEventListener('click', (e) => {
+        if (e.target === validationModal) closeValidationErrorModal();
+    });
+}
 
 // Add Cost Parameter Triggers & Modal Listeners
 document.querySelectorAll('.add-cost-parameter-trigger').forEach(btn => {
@@ -703,6 +721,11 @@ async function createNewGraph() {
         
         const data = await response.json();
         
+        if (data.objErrorDetails && String(data.objErrorDetails.errorCode) === "69") {
+            showValidationErrorModal(data.objErrorDetails.errorMessage || "Graph validation failed: Cycle detected. A Directed Acyclic Graph (DAG) cannot contain cycles.", "69");
+            return;
+        }
+
         if (data.objErrorDetails && (data.objErrorDetails.errorCode === "0" || data.objErrorDetails.errorCode === "200")) {
             showToast('Graph created successfully!');
             fetchUserGraphs();
@@ -2042,8 +2065,15 @@ async function saveGraphChanges() {
         });
         const data = await response.json();
         
-        if (data.objErrorDetails && data.objErrorDetails.errorCode !== "1" && data.objErrorDetails.errorCode !== "0") {
-            throw new Error(data.objErrorDetails.errorMessage || "Failed to update graph");
+        if (data.objErrorDetails) {
+            const errCode = String(data.objErrorDetails.errorCode);
+            if (errCode === "69") {
+                showValidationErrorModal(data.objErrorDetails.errorMessage || "Graph validation failed: Cycle detected. A Directed Acyclic Graph (DAG) cannot contain cycles.", "69");
+                return;
+            }
+            if (errCode !== "1" && errCode !== "0") {
+                throw new Error(data.objErrorDetails.errorMessage || "Failed to update graph");
+            }
         }
         
         showToast("Graph updated successfully!");
@@ -2176,6 +2206,30 @@ function openAddCostModal() {
 function closeAddCostModal() {
     if (!addCostModal) return;
     addCostModal.classList.add('hidden');
+}
+
+// Validation Error Modal Handlers (Error Code 69 / Cycle & DAG Validation)
+function showValidationErrorModal(message, errorCode = "69") {
+    const modal = document.getElementById('validation-error-modal');
+    const msgEl = document.getElementById('validation-modal-message');
+    const codeTag = document.querySelector('.validation-code-tag');
+    if (msgEl) {
+        msgEl.textContent = message || "Graph contains cycle(s). Directed Acyclic Graphs (DAG) cannot contain cycles.";
+    }
+    if (codeTag) {
+        codeTag.textContent = `ERROR CODE ${errorCode || '69'}`;
+    }
+    if (modal) {
+        modal.classList.remove('hidden');
+        lucide.createIcons();
+    }
+}
+
+function closeValidationErrorModal() {
+    const modal = document.getElementById('validation-error-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
 }
 
 function handleAddCostSubmit(e) {

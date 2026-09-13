@@ -58,6 +58,10 @@ public class PathUtilityImpl implements PathUtilityInterface {
                 storage.addLeaf(treeId);
             } else {
                 for (int childId : children) {
+                    if (storage.containsAncestor(treeId, childId)) {
+                        // Avoid infinite traversal loop and heap explosion if a cycle exists
+                        throw new IllegalStateException("Cycle detected during path traversal involving node " + childId);
+                    }
                     float[] nextCosts = new float[costDimension];
                     for (int d = 0; d < costDimension; d++) {
                         // Cumulative Cost = Parent Cumulative + Edge Cost + Child Node Cost

@@ -2235,4 +2235,132 @@ body {
     transition: opacity 0.25s ease;
 }
 
+/* ==========================================================================
+   Validation Error Modal (Error Code 69 / Cycle & DAG Validation)
+   ========================================================================== */
+.validation-modal-card {
+    max-width: 520px;
+    border: 1px solid rgba(244, 63, 94, 0.35);
+    box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.8), 0 0 35px rgba(244, 63, 94, 0.18);
+    background: rgba(23, 19, 32, 0.94);
+    animation: modalPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalPopIn {
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.validation-icon-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(244, 63, 94, 0.1));
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f87171;
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.25);
+    flex-shrink: 0;
+}
+
+.validation-icon-badge svg,
+.validation-icon-badge i {
+    width: 24px;
+    height: 24px;
+}
+
+.validation-code-tag {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #fb7185;
+    background: rgba(244, 63, 94, 0.15);
+    border: 1px solid rgba(244, 63, 94, 0.35);
+    padding: 2px 8px;
+    border-radius: 9999px;
+    display: inline-block;
+    margin-bottom: 3px;
+}
+
+.validation-alert-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(185, 28, 28, 0.05));
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: var(--radius-md);
+    padding: 1.1rem;
+    color: #fecdd3;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.cycle-indicator-icon {
+    width: 22px;
+    height: 22px;
+    color: #fb7185;
+    flex-shrink: 0;
+    margin-top: 2px;
+    animation: rotateSlow 8s linear infinite;
+}
+
+@keyframes rotateSlow {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.validation-guidance-box {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.15rem;
+    font-size: 0.88rem;
+}
+
+.validation-guidance-box h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.validation-guidance-box ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.validation-guidance-box li strong {
+    color: #e2e8f0;
+}
+
+.validation-dismiss-btn {
+    background: linear-gradient(135deg, #e11d48, #be123c) !important;
+    border-color: rgba(244, 63, 94, 0.4) !important;
+    box-shadow: 0 4px 14px rgba(225, 29, 72, 0.4) !important;
+}
+
+.validation-dismiss-btn:hover {
+    background: linear-gradient(135deg, #f43f5e, #e11d48) !important;
+    box-shadow: 0 6px 20px rgba(244, 63, 94, 0.55) !important;
+}
+
+
 

@@ -11,30 +11,115 @@ import com.workflow.dag_engine.models.enums.GraphStatus;
 import com.workflow.dag_engine.models.graph.GraphUploadRequest;
 import com.workflow.dag_engine.persistence.entities.GraphEntity;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.workflow.dag_engine.models.graph.Edge;
+import com.workflow.dag_engine.models.graph.Node;
+
 public class GraphUtility {
 
     private static final Logger log = LoggerFactory.getLogger(GraphUtility.class);
 
-    static CycleStatus isGraphCyclic(GraphUploadRequest graphUploadRequest) {
+    public static CycleStatus isGraphCyclic(GraphUploadRequest graphUploadRequest) {
+        if (graphUploadRequest == null) {
+            return CycleStatus.ACYCLIC;
+        }
+        return hasCycle(graphUploadRequest) ? CycleStatus.CYCLIC : CycleStatus.ACYCLIC;
+    }
 
-        final String methodName = "Inside GraphUtility.isGraphCyclic --> ";
-
-        CycleStatus cycleStatus = CycleStatus.ACYCLIC;
-
-        try {
-            log.info(methodName + " graphUploadRequest:" + graphUploadRequest.toString());
-
-            // implement logic to check cycles in graph and change cycic to Y if cycle
-            // exists
-
-        } catch (Exception e) {
-
-            log.info(methodName + " Exception occued :" + e.toString());
-
+    public static boolean hasCycle(GraphUploadRequest graphUploadRequest) {
+        if (graphUploadRequest == null) {
+            return false;
         }
 
-        return cycleStatus;
+        try {
+            Map<Long, List<Long>> adj = new HashMap<>();
+            Set<Long> allNodes = new HashSet<>();
 
+            // 1. Collect all nodes and their outgoing edges
+            if (graphUploadRequest.getNode() != null) {
+                for (Node n : graphUploadRequest.getNode()) {
+                    if (n != null && n.getId() != null) {
+                        allNodes.add(n.getId());
+                        adj.putIfAbsent(n.getId(), new ArrayList<>());
+                        if (n.getOutgoingEdges() != null) {
+                            for (Edge oe : n.getOutgoingEdges()) {
+                                if (oe != null && oe.getTargetNodeId() != null) {
+                                    allNodes.add(oe.getTargetNodeId());
+                                    adj.putIfAbsent(oe.getTargetNodeId(), new ArrayList<>());
+                                    adj.get(n.getId()).add(oe.getTargetNodeId());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 2. Collect edges from the edge list
+            if (graphUploadRequest.getEdge() != null) {
+                for (Edge e : graphUploadRequest.getEdge()) {
+                    if (e != null && e.getSourceNodeId() != null && e.getTargetNodeId() != null) {
+                        Long u = e.getSourceNodeId();
+                        Long v = e.getTargetNodeId();
+                        allNodes.add(u);
+                        allNodes.add(v);
+                        adj.putIfAbsent(u, new ArrayList<>());
+                        adj.putIfAbsent(v, new ArrayList<>());
+                        if (!adj.get(u).contains(v)) {
+                            adj.get(u).add(v);
+                        }
+                    }
+                }
+            }
+
+            // 3. Cycle detection using 3-color DFS
+            // 0 = UNVISITED, 1 = VISITING (in recursion stack), 2 = VISITED
+            Map<Long, Integer> state = new HashMap<>();
+            for (Long nodeId : allNodes) {
+                state.put(nodeId, 0);
+            }
+
+            for (Long nodeId : allNodes) {
+                if (state.get(nodeId) == 0) {
+                    if (dfsHasCycle(nodeId, adj, state)) {
+                        log.warn("Cycle detected in graph '{}' at node {}", graphUploadRequest.getGraphName(), nodeId);
+                        return true;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Exception during cycle detection: ", e);
+        }
+
+        return false;
+    }
+
+    private static boolean dfsHasCycle(Long current, Map<Long, List<Long>> adj, Map<Long, Integer> state) {
+        state.put(current, 1); // Mark as visiting (in recursion stack)
+
+        List<Long> neighbors = adj.get(current);
+        if (neighbors != null) {
+            for (Long neighbor : neighbors) {
+                Integer neighborState = state.getOrDefault(neighbor, 0);
+                if (neighborState == 1) {
+                    // Back-edge found -> cycle!
+                    return true;
+                }
+                if (neighborState == 0) {
+                    if (dfsHasCycle(neighbor, adj, state)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        state.put(current, 2); // Mark as completely visited
+        return false;
     }
 
     public static GraphEntity convertGraphUploadRequestToGraphEntity(GraphUploadRequest graphUploadRequest) {

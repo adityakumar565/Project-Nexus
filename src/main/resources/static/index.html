@@ -559,6 +559,45 @@
         </div>
     </div>
 
+    <!-- Validation Error Modal (Error Code 69 / Cycle & DAG Validation) -->
+    <div id="validation-error-modal" class="modal-backdrop hidden">
+        <div class="modal-card validation-modal-card">
+            <div class="modal-header">
+                <div class="modal-title-wrap">
+                    <div class="validation-icon-badge">
+                        <i data-lucide="alert-octagon"></i>
+                    </div>
+                    <div>
+                        <div class="validation-code-tag">ERROR CODE 69</div>
+                        <h3 id="validation-modal-title">Graph Validation Error</h3>
+                    </div>
+                </div>
+                <button class="glass-btn icon-btn modal-close-btn" id="close-validation-modal-btn" type="button" title="Close">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="validation-alert-banner">
+                    <i data-lucide="refresh-cw" class="cycle-indicator-icon"></i>
+                    <p id="validation-modal-message">Graph contains cycle(s). Directed Acyclic Graphs (DAG) cannot contain cycles.</p>
+                </div>
+                <div class="validation-guidance-box">
+                    <h4>How to resolve this:</h4>
+                    <ul>
+                        <li>Check the edges you recently added or modified.</li>
+                        <li>Ensure connections flow strictly in one direction without circular loops.</li>
+                        <li>Delete the cyclic edge, then click <strong>Save Changes</strong> again.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="glass-btn primary validation-dismiss-btn" id="validation-modal-dismiss-btn">
+                    <i data-lucide="check"></i> Understood
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- AI Purple Error Modal -->
     <div id="ai-error-modal" class="modal hidden purple-error-modal">
         <div class="modal-content glass-card purple-glass-card">
